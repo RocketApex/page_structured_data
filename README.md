@@ -1,8 +1,6 @@
-# PageStructuredData
+# page_structured_data
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/page_structured_data`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem helps you to generate Google's schema markup easily and currently it supports `json_ld` format which can be easily added to your pages.
 
 ## Installation
 
