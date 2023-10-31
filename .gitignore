@@ -12,3 +12,6 @@
 
 # IDE
 .idea
+
+# Ignore built gems
+/*.gem
