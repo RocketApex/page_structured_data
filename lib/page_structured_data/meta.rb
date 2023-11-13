@@ -16,7 +16,7 @@ module PageStructuredData
       @breadcrumb = breadcrumb
       @page_type = page_type
 
-      @breadcrumb = PageBreadcrumbs.new if breadcrumb.blank?
+      @breadcrumb = Breadcrumbs.new if breadcrumb.blank?
     end
 
     def title_with_hierarchies
