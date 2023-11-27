@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email       = ["opensource@rocketapex.com"]
 
   spec.summary       = "Easily create meta tags with structured data for webpages"
-  spec.description   = "Easily create meta tags with structured data for webpages"
+  spec.description   = "This gem helps to create structured meta tags and ld+json schema for rails applications. It is easy to use and can be incorporated into any existing rails app."
   spec.homepage      = "https://github.com/RocketApex/page_structured_data"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
@@ -25,5 +25,5 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency "rails", ">= 7.0.0"
-  spec.add_dependency "slim"
+  spec.add_dependency "slim", ">= 4.1.0"
 end

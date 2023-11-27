@@ -11,3 +11,6 @@
 
 # IDE related
 .idea
+
+# Gems being built
+/*.gem
