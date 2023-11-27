@@ -2,9 +2,7 @@
 
 module PageStructuredData
   # Basic page metadata for any page
-  class Meta
-    DEFAULT_IMAGE = 'common/page_meta/meta_image.png'
-
+  class Page
     attr_reader :title, :description, :image, :extra_title, :breadcrumb, :page_type
 
     def initialize(title:, description: nil, image: nil, # rubocop:disable Metrics/ParameterLists
@@ -26,7 +24,11 @@ module PageStructuredData
     end
 
     def page_title
-      title_with_hierarchies.join(separator) + separator + base_company_name
+      result = title_with_hierarchies.join(separator)
+      if PageStructuredData.base_app_name.present?
+        result += separator + PageStructuredData.base_app_name
+      end
+      result
     end
 
     def json_lds
@@ -40,10 +42,6 @@ module PageStructuredData
 
     def separator
       ' - '
-    end
-
-    def base_company_name
-      ::Common::Constants::Constants::COMPANY_NAME
     end
   end
 end
