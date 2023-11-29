@@ -38,14 +38,14 @@ module PageStructuredData
       output.join
     end
 
+    def default_image_url
+      PageStructuredData.default_image_url
+    end
+
     private
 
     def base_app_name
       PageStructuredData.base_app_name
-    end
-
-    def default_image_url
-      PageStructuredData.default_image_url
     end
 
     def separator
