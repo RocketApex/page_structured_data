@@ -4,7 +4,9 @@
 - if page&.image.present?
   - image = page.image
 - else
-  - image = PageStructuredData.default_image_url
+  - image = page.default_image_url
+
+title = title
 
 meta{name="title" content=title}
 meta{name="description" content=description}

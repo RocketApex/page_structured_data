@@ -25,8 +25,8 @@ module PageStructuredData
 
     def page_title
       result = title_with_hierarchies.join(separator)
-      if PageStructuredData.base_app_name.present?
-        result += separator + PageStructuredData.base_app_name
+      if base_app_name.present?
+        result += separator + base_app_name
       end
       result
     end
@@ -39,6 +39,14 @@ module PageStructuredData
     end
 
     private
+
+    def base_app_name
+      PageStructuredData.base_app_name
+    end
+
+    def default_image_url
+      PageStructuredData.default_image_url
+    end
 
     def separator
       ' - '
