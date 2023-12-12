@@ -1,10 +1,8 @@
+- default_image_url = local_assigns[:default_image_url]
+
 - title = page&.page_title
 - description = page&.description
-- image = page&.image
-- if page&.image.present?
-  - image = page.image
-- else
-  - image = page.default_image_url
+- image = page&.image || default_image_url || nil
 
 title = title
 

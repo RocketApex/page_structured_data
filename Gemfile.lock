@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    page_structured_data (0.1.6)
+    page_structured_data (0.1.7)
       rails (>= 7.0.0)
       slim (>= 4.1.0)
 
@@ -94,7 +94,7 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.5)
     minitest (5.20.0)
-    net-imap (0.4.6)
+    net-imap (0.4.8)
       date
       net-protocol
     net-pop (0.1.2)
