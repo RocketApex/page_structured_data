@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    page_structured_data (0.1.7)
+    page_structured_data (1.0.0)
       rails (>= 7.0.0)
       slim (>= 4.1.0)
 
@@ -73,37 +73,42 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    base64 (0.3.0)
     builder (3.2.4)
     concurrent-ruby (1.2.2)
     crass (1.0.6)
-    date (3.3.4)
+    date (3.5.1)
     erubi (1.12.0)
-    globalid (1.2.1)
+    globalid (1.3.0)
       activesupport (>= 6.1)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
+    logger (1.7.0)
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
-    mail (2.8.1)
+    mail (2.9.0)
+      logger
       mini_mime (>= 0.1.1)
       net-imap
       net-pop
       net-smtp
-    marcel (1.0.2)
-    method_source (1.0.0)
+    marcel (1.1.0)
+    method_source (1.1.0)
     mini_mime (1.1.5)
     minitest (5.20.0)
-    net-imap (0.4.8)
+    net-imap (0.5.13)
       date
       net-protocol
     net-pop (0.1.2)
       net-protocol
     net-protocol (0.2.2)
       timeout
-    net-smtp (0.4.0)
+    net-smtp (0.5.1)
       net-protocol
     nio4r (2.6.1)
+    nokogiri (1.15.5-aarch64-linux)
+      racc (~> 1.4)
     nokogiri (1.15.5-arm64-darwin)
       racc (~> 1.4)
     puma (6.4.0)
@@ -140,8 +145,8 @@ GEM
       rake (>= 12.2)
       thor (~> 1.0)
       zeitwerk (~> 2.5)
-    rake (13.1.0)
-    slim (5.2.0)
+    rake (13.3.1)
+    slim (5.2.1)
       temple (~> 0.10.0)
       tilt (>= 2.1.0)
     sprockets (4.2.1)
@@ -151,19 +156,22 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
+    sqlite3 (1.6.9-aarch64-linux)
     sqlite3 (1.6.9-arm64-darwin)
-    temple (0.10.3)
-    thor (1.3.0)
-    tilt (2.3.0)
-    timeout (0.4.1)
+    temple (0.10.4)
+    thor (1.4.0)
+    tilt (2.6.1)
+    timeout (0.6.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    websocket-driver (0.7.6)
+    websocket-driver (0.8.0)
+      base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    zeitwerk (2.6.12)
+    zeitwerk (2.6.18)
 
 PLATFORMS
+  aarch64-linux
   arm64-darwin-22
 
 DEPENDENCIES

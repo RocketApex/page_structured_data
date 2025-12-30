@@ -17,7 +17,7 @@ module PageStructuredData
       node = {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
-        itemListElement: [],
+        'itemListElement': [],
       }
 
       items = []
