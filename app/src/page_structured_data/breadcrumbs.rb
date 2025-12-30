@@ -18,7 +18,7 @@ module PageStructuredData
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         'itemListElement': [],
-      }
+      }.with_indifferent_access
 
       items = []
       count = 0

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    page_structured_data (1.0.0)
+    page_structured_data (1.0.1)
       rails (>= 7.0.0)
       slim (>= 4.1.0)
 
