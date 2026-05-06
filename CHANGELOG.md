@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+## 1.0.8 - 2026-05-06
+
 - Add `PageStructuredData::PageTypes::Organization` for schema.org Organization JSON-LD.
 
 ## 1.0.7 - 2026-05-06
