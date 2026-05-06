@@ -4,7 +4,7 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
-## 1.0.5 - 2026-05-06
+## 1.0.6 - 2026-05-06
 
 - Add tests for HTML escaping in rendered meta tags.
 - Add tests for script-breaking content in JSON-LD output.
@@ -18,6 +18,10 @@ All notable changes to this project are documented here.
 - Add `render_default_breadcrumb_json_ld` config to opt out of current-page-only breadcrumb JSON-LD.
 - Add CI coverage for Rails 7.0, 7.1, 7.2, 8.0, and 8.1.
 - Widen the Rails dependency to support Rails 7.x and 8.x.
+
+## 1.0.5 - 2026-05-06
+
+- Previous public release.
 
 ## 1.0.4 - 2026-05-06
 
