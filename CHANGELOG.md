@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+## 1.0.7 - 2026-05-06
+
 - Remove unused generated Rails engine boilerplate files.
 
 ## 1.0.6 - 2026-05-06
