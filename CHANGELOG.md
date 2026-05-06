@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+## 1.0.10 - 2026-05-06
+
 - Add JSON-LD escaping coverage for organization page types.
 - Add `PageStructuredData::PageTypes::WebSite` for schema.org WebSite JSON-LD.
 - Add `page_types:` support for rendering multiple page type JSON-LD scripts.
