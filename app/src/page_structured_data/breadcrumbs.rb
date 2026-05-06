@@ -13,15 +13,28 @@ module PageStructuredData
       hierarchy.pluck(:title)
     end
 
-    def json_ld(current_page_title:) # rubocop:disable Metrics/MethodLength
-      node = {
+    def to_h(current_page_title:) # rubocop:disable Metrics/MethodLength
+      {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
-        'itemListElement': [],
-      }.with_indifferent_access
+        'itemListElement': item_list_elements(current_page_title: current_page_title),
+      }
+    end
 
+    def json_ld(current_page_title:)
+      %(
+      <script type="application/ld+json">
+        #{to_h(current_page_title: current_page_title).to_json}
+        </script>
+      )
+    end
+
+    private
+
+    def item_list_elements(current_page_title:)
       items = []
       count = 0
+
       @hierarchy.each do |page|
         items << {
           '@type': 'ListItem',
@@ -36,14 +49,6 @@ module PageStructuredData
         position: (count += 1),
         name: current_page_title,
       }
-
-      node['itemListElement'] = items
-
-      %(
-      <script type="application/ld+json">
-        #{node.to_json}
-        </script>
-      )
     end
   end
 end

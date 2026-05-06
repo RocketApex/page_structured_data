@@ -21,22 +21,16 @@ Because this is a public gem and repository, changes should be polished before r
 - The dummy app previously used `config.autoload_lib`, which is Rails 7.1-only, while the lockfile resolves Rails 7.0.8. This has been changed to explicit `autoload_paths` and `eager_load_paths`.
 - `require "page_structured_data"` previously failed before Rails was loaded. The engine now requires the Rails pieces it depends on.
 - `Page` currently creates an empty `Breadcrumbs` object when no breadcrumb is passed, so `json_lds` emits breadcrumb JSON-LD for every page. This may be surprising, but it is existing behavior and should not be changed in a patch release.
-- `BlogPosting` and `NewsArticle` are almost identical except for schema type. Refactor only after behavior is covered by tests.
+- `BlogPosting` and `NewsArticle` share article behavior through `PageStructuredData::PageTypes::Article`.
 - JSON-LD methods currently return full `<script>` HTML strings, and the ERB partial marks the combined output as `html_safe`. A future safer API could expose hashes while keeping `json_ld` backward compatible.
 - The gemspec says Ruby `>= 2.3.0`, but Rails `>= 7.0.0` implies a newer practical Ruby baseline. Aligning this is a compatibility-facing decision.
 
 ## Things To Do
 
-1. Add escaping tests for HTML and JSON-LD output from `app/views/page_structured_data/_meta_tags.html.erb`.
-2. Add tests for HTML escaping and JSON escaping, especially for user-provided titles, descriptions, image URLs, breadcrumb titles, and article data.
-3. Add tests around default image fallback behavior.
-4. Add tests for pages with both breadcrumbs and page types to lock down multiple JSON-LD script output.
-5. Consider extracting shared article schema behavior for `BlogPosting` and `NewsArticle` after tests are in place.
-6. Consider adding `to_h` or `schema_hash` methods to schema objects as an additive API. Keep `json_ld` returning the current script HTML for compatibility.
-7. Decide whether default breadcrumb JSON-LD should remain the default forever, become configurable, or change only in a future major release.
-8. Review gemspec Ruby/Rails support and document the supported matrix in `README.md`.
-9. Add CI for the intended Ruby and Rails versions.
-10. Trim unused generated Rails engine files only if doing so does not affect packaged files or downstream apps.
+1. Decide whether default breadcrumb JSON-LD should remain the default forever, become configurable, or change only in a future major release.
+2. Review gemspec Ruby/Rails support and document the supported matrix in `README.md`.
+3. Add CI for the intended Ruby and Rails versions.
+4. Trim unused generated Rails engine files only if doing so does not affect packaged files or downstream apps.
 
 ## Verification Commands
 

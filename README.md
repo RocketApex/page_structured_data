@@ -196,6 +196,7 @@ PageStructuredData::Breadcrumbs.new(
 Important methods:
 
 - `titles`: returns breadcrumb titles.
+- `to_h(current_page_title:)`: returns a structured hash for `BreadcrumbList` JSON-LD.
 - `json_ld(current_page_title:)`: returns a `BreadcrumbList` JSON-LD script tag.
 
 ### Article Page Types
@@ -221,6 +222,11 @@ PageStructuredData::PageTypes::NewsArticle.new(
 ```
 
 `authors` should be an array of hashes with `:name` and `:url` keys.
+
+Important methods:
+
+- `to_h`: returns a structured hash for article JSON-LD.
+- `json_ld`: returns an article JSON-LD script tag.
 
 ## Development
 

@@ -52,6 +52,21 @@ class MetaTagsPartialTest < ActionView::TestCase
     assert_equal "NewsArticle", JSON.parse(json_ld_scripts[1].text)["@type"]
   end
 
+  test "escapes html-sensitive values in rendered tags" do
+    page = PageStructuredData::Page.new(
+      title: 'Home "quoted" & <tag>',
+      description: 'Description "quoted" & <tag>',
+      image: 'https://example.com/image.png?name="quoted"&tag=<tag>'
+    )
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_select "title", text: 'Home "quoted" & <tag>'
+    assert_includes rendered, "Home &quot;quoted&quot; &amp; &lt;tag&gt;"
+    assert_includes rendered, 'content="Description &quot;quoted&quot; &amp; &lt;tag&gt;"'
+    assert_includes rendered, 'content="https://example.com/image.png?name=&quot;quoted&quot;&amp;tag=&lt;tag&gt;"'
+  end
+
   test "renders safely when page is absent" do
     render partial: "page_structured_data/meta_tags", locals: { page: nil }
 
