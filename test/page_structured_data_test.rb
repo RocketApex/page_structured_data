@@ -3,11 +3,14 @@ require "test_helper"
 class PageStructuredDataTest < ActiveSupport::TestCase
   setup do
     @original_base_app_name = PageStructuredData.base_app_name
+    @original_render_default_breadcrumb_json_ld = PageStructuredData.render_default_breadcrumb_json_ld
     PageStructuredData.base_app_name = nil
+    PageStructuredData.render_default_breadcrumb_json_ld = true
   end
 
   teardown do
     PageStructuredData.base_app_name = @original_base_app_name
+    PageStructuredData.render_default_breadcrumb_json_ld = @original_render_default_breadcrumb_json_ld
   end
 
   test "it has a version number" do
@@ -40,6 +43,26 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "https://schema.org", json_ld["@context"]
     assert_equal "BreadcrumbList", json_ld["@type"]
     assert_equal [{ "@type" => "ListItem", "position" => 1, "name" => "Home" }], json_ld["itemListElement"]
+  end
+
+  test "pages can opt out of default breadcrumb json ld" do
+    PageStructuredData.render_default_breadcrumb_json_ld = false
+    page = PageStructuredData::Page.new(title: "Home")
+
+    assert_equal "", page.json_lds
+  end
+
+  test "explicit breadcrumbs render when default breadcrumb json ld is disabled" do
+    PageStructuredData.render_default_breadcrumb_json_ld = false
+    breadcrumbs = PageStructuredData::Breadcrumbs.new(
+      hierarchy: [{ title: "Resources", href: "https://example.com/resources" }]
+    )
+    page = PageStructuredData::Page.new(title: "Article", breadcrumb: breadcrumbs)
+
+    json_ld = parse_json_ld(page.json_lds)
+
+    assert_equal "BreadcrumbList", json_ld["@type"]
+    assert_equal ["Resources", "Article"], json_ld["itemListElement"].map { |item| item["name"] }
   end
 
   test "breadcrumbs include hierarchy and current page" do

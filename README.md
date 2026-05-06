@@ -17,10 +17,10 @@ It helps Rails applications render:
 
 ## Requirements
 
-- Rails 7.0 or newer
+- Rails 7.x
 - Ruby 2.7 or newer
 
-Rails 7.0 requires Ruby 2.7 or newer, so this gem follows that same baseline. Newer Rails versions may require newer Ruby versions; use the Ruby version supported by your Rails release.
+Rails 7.0 requires Ruby 2.7 or newer, so this gem follows that same baseline. Rails 8 is not declared as supported yet; add CI coverage before widening the Rails dependency.
 
 ## Installation
 
@@ -45,11 +45,14 @@ Configure application-wide defaults in an initializer:
 Rails.application.config.after_initialize do
   PageStructuredData.config do |config|
     config.base_app_name = "AwesomestApp"
+    config.render_default_breadcrumb_json_ld = true
   end
 end
 ```
 
 `base_app_name` is appended to generated page titles.
+
+`render_default_breadcrumb_json_ld` controls whether pages without an explicit breadcrumb render current-page-only breadcrumb JSON-LD. It defaults to `true` for backward compatibility. Set it to `false` if you only want breadcrumb JSON-LD when a `PageStructuredData::Breadcrumbs` object is passed to the page.
 
 For example:
 
@@ -127,7 +130,7 @@ Pass the breadcrumbs into the page object:
 
 This renders `BreadcrumbList` JSON-LD similar to Google's breadcrumb structured data format.
 
-Current compatibility note: when no breadcrumb object is passed, `PageStructuredData::Page` still creates an empty breadcrumb trail for the current page. This is existing behavior and should be considered part of the current public API.
+Current compatibility note: when no breadcrumb object is passed, `PageStructuredData::Page` renders current-page-only breadcrumb JSON-LD by default. To opt out, set `config.render_default_breadcrumb_json_ld = false`.
 
 ## Article Page Types
 

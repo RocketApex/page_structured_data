@@ -20,16 +20,16 @@ Because this is a public gem and repository, changes should be polished before r
 - Test coverage was very thin. Baseline tests now document current title composition and JSON-LD behavior.
 - The dummy app previously used `config.autoload_lib`, which is Rails 7.1-only, while the lockfile resolves Rails 7.0.8. This has been changed to explicit `autoload_paths` and `eager_load_paths`.
 - `require "page_structured_data"` previously failed before Rails was loaded. The engine now requires the Rails pieces it depends on.
-- `Page` currently creates an empty `Breadcrumbs` object when no breadcrumb is passed, so `json_lds` emits breadcrumb JSON-LD for every page. This may be surprising, but it is existing behavior and should not be changed in a patch release.
+- `Page` emits current-page-only breadcrumb JSON-LD when no breadcrumb is passed by default. This is preserved for compatibility and can be disabled with `PageStructuredData.render_default_breadcrumb_json_ld = false`.
 - `BlogPosting` and `NewsArticle` share article behavior through `PageStructuredData::PageTypes::Article`.
 - JSON-LD methods currently return full `<script>` HTML strings, and the ERB partial marks the combined output as `html_safe`. A future safer API could expose hashes while keeping `json_ld` backward compatible.
 - The gemspec requires Ruby `>= 2.7.0`, matching the Rails 7 baseline.
+- The gemspec supports Rails 7.x. Widen Rails support only after adding CI coverage for the new Rails major/minor.
 
 ## Things To Do
 
-1. Decide whether default breadcrumb JSON-LD should remain the default forever, become configurable, or change only in a future major release.
-2. Expand CI to a broader Rails/Ruby matrix if the gem commits to supporting more than the current baseline.
-3. Trim unused generated Rails engine files only if doing so does not affect packaged files or downstream apps.
+1. Expand CI to a broader Rails/Ruby matrix before widening Rails support beyond Rails 7.x.
+2. Trim unused generated Rails engine files only if doing so does not affect packaged files or downstream apps.
 
 ## Verification Commands
 

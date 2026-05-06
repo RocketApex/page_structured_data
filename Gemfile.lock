@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     page_structured_data (1.0.4)
-      rails (>= 7.0.0)
+      rails (~> 7.0, >= 7.0.0)
 
 GEM
   remote: https://rubygems.org/

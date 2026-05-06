@@ -13,8 +13,6 @@ module PageStructuredData
       @extra_title = extra_title
       @breadcrumb = breadcrumb
       @page_type = page_type
-
-      @breadcrumb = Breadcrumbs.new if breadcrumb.blank?
     end
 
     def title_with_hierarchies
@@ -33,12 +31,19 @@ module PageStructuredData
 
     def json_lds
       output = []
-      output << breadcrumb.json_ld(current_page_title: title) if breadcrumb.present?
+      output << breadcrumb_json_ld if (breadcrumb_json_ld = self.breadcrumb_json_ld).present?
       output << page_type.json_ld if page_type.present?
       output.join
     end
 
     private
+
+    def breadcrumb_json_ld
+      return breadcrumb.json_ld(current_page_title: title) if breadcrumb.present?
+      return unless PageStructuredData.render_default_breadcrumb_json_ld
+
+      Breadcrumbs.new.json_ld(current_page_title: title)
+    end
 
     def base_app_name
       PageStructuredData.base_app_name

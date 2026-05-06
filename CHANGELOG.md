@@ -12,6 +12,8 @@ All notable changes to this project are documented here.
 - Add tests for pages that render both breadcrumb and page type JSON-LD.
 - Align the gemspec Ruby requirement with the Rails 7 baseline.
 - Add GitHub Actions CI for tests, require verification, and gem build verification.
+- Constrain the Rails dependency to Rails 7.x, matching the tested support baseline.
+- Add `render_default_breadcrumb_json_ld` config to opt out of current-page-only breadcrumb JSON-LD.
 
 ## 1.0.4 - 2026-05-06
 
