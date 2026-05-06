@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+## 1.0.5 - 2026-05-06
+
 - Add tests for HTML escaping in rendered meta tags.
 - Add tests for script-breaking content in JSON-LD output.
 - Add broader JSON-LD escaping coverage for breadcrumbs and article data.
