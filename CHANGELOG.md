@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+## 1.0.12 - 2026-05-06
+
 - Add reusable interaction statistics for article-like page types.
 - Add `PageStructuredData::PageTypes::DiscussionForumPosting` for forum-style posts.
 - Render Twitter Card meta tags with `name` attributes.
