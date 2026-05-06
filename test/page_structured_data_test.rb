@@ -171,6 +171,8 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     refute json_ld.key?("logo")
     refute json_ld.key?("sameAs")
     refute json_ld.key?("parentOrganization")
+    refute json_ld.key?("description")
+    refute json_ld.key?("founder")
   end
 
   test "organization is available from the gem entrypoint" do
@@ -181,18 +183,25 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     page_type = PageStructuredData::PageTypes::Organization.new(
       name: "RocketApex",
       url: "https://rocketapex.com",
+      description: "Open source projects from RocketApex",
       logo: "https://rocketapex.com/logo.png",
       same_as: ["https://github.com/RocketApex"],
-      parent_organization: { name: "Parent Org", url: "https://parent.example" }
+      parent_organization: { name: "Parent Org", url: "https://parent.example" },
+      founder: { '@type': 'Person', name: "Jane Doe", url: "https://example.com/jane" }
     )
 
     json_ld = parse_json_ld(page_type.json_ld)
 
+    assert_equal "Open source projects from RocketApex", json_ld["description"]
     assert_equal "https://rocketapex.com/logo.png", json_ld["logo"]
     assert_equal ["https://github.com/RocketApex"], json_ld["sameAs"]
     assert_equal(
       { "@type" => "Organization", "name" => "Parent Org", "url" => "https://parent.example" },
       json_ld["parentOrganization"]
+    )
+    assert_equal(
+      { "@type" => "Person", "name" => "Jane Doe", "url" => "https://example.com/jane" },
+      json_ld["founder"]
     )
   end
 
@@ -200,9 +209,11 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     page_type = PageStructuredData::PageTypes::Organization.new(
       name: "RocketApex",
       url: "https://rocketapex.com",
+      description: "Open source projects from RocketApex",
       logo: "https://rocketapex.com/logo.png",
       same_as: ["https://github.com/RocketApex"],
-      parent_organization: { name: "Parent Org", url: "https://parent.example" }
+      parent_organization: { name: "Parent Org", url: "https://parent.example" },
+      founder: { '@type': 'Person', name: "Jane Doe", url: "https://example.com/jane" }
     )
 
     assert_equal(
@@ -211,12 +222,18 @@ class PageStructuredDataTest < ActiveSupport::TestCase
         "@type" => "Organization",
         "name" => "RocketApex",
         "url" => "https://rocketapex.com",
+        "description" => "Open source projects from RocketApex",
         "logo" => "https://rocketapex.com/logo.png",
         "sameAs" => ["https://github.com/RocketApex"],
         "parentOrganization" => {
           "@type" => "Organization",
           "name" => "Parent Org",
           "url" => "https://parent.example"
+        },
+        "founder" => {
+          "@type" => "Person",
+          "name" => "Jane Doe",
+          "url" => "https://example.com/jane"
         }
       },
       page_type.to_h.deep_stringify_keys
@@ -370,13 +387,19 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "https://example.com/authors/#{dangerous_value}", json_ld["author"].first["url"]
   end
 
-  test "organization json ld escapes name urls logo same as and parent organization" do
+  test "organization json ld escapes name urls description logo same as founder and parent organization" do
     dangerous_value = "</script><script>alert(1)</script>"
     page_type = PageStructuredData::PageTypes::Organization.new(
       name: "Org #{dangerous_value}",
       url: "https://example.com/#{dangerous_value}",
+      description: "Description #{dangerous_value}",
       logo: "https://example.com/#{dangerous_value}.png",
       same_as: ["https://github.com/#{dangerous_value}"],
+      founder: {
+        '@type': 'Person',
+        name: "Founder #{dangerous_value}",
+        url: "https://founder.example/#{dangerous_value}"
+      },
       parent_organization: {
         name: "Parent #{dangerous_value}",
         url: "https://parent.example/#{dangerous_value}"
@@ -389,8 +412,11 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_json_ld_escapes_script_breaking_content(html, dangerous_value)
     assert_equal "Org #{dangerous_value}", json_ld["name"]
     assert_equal "https://example.com/#{dangerous_value}", json_ld["url"]
+    assert_equal "Description #{dangerous_value}", json_ld["description"]
     assert_equal "https://example.com/#{dangerous_value}.png", json_ld["logo"]
     assert_equal ["https://github.com/#{dangerous_value}"], json_ld["sameAs"]
+    assert_equal "Founder #{dangerous_value}", json_ld["founder"]["name"]
+    assert_equal "https://founder.example/#{dangerous_value}", json_ld["founder"]["url"]
     assert_equal "Parent #{dangerous_value}", json_ld["parentOrganization"]["name"]
     assert_equal "https://parent.example/#{dangerous_value}", json_ld["parentOrganization"]["url"]
   end

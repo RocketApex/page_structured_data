@@ -4,14 +4,16 @@ module PageStructuredData
   module PageTypes
     # Organization structured data for a page
     class Organization
-      attr_reader :name, :url, :logo, :same_as, :parent_organization
+      attr_reader :name, :url, :description, :logo, :same_as, :parent_organization, :founder
 
-      def initialize(name:, url:, logo: nil, same_as: [], parent_organization: nil)
+      def initialize(name:, url:, description: nil, logo: nil, same_as: [], parent_organization: nil, founder: nil)
         @name = name
         @url = url
+        @description = description
         @logo = logo
         @same_as = same_as
         @parent_organization = parent_organization
+        @founder = founder
       end
 
       def to_h # rubocop:disable Metrics/MethodLength
@@ -22,8 +24,10 @@ module PageStructuredData
 
         node[:name] = name
         node[:url] = url
+        node[:description] = description if description.present?
         node[:logo] = logo if logo.present?
         node[:sameAs] = same_as if same_as.present?
+        node[:founder] = founder_to_h if founder.present?
 
         if parent_organization.present?
           node[:parentOrganization] = {
@@ -42,6 +46,14 @@ module PageStructuredData
           #{to_h.to_json}
           </script>
         )
+      end
+
+      private
+
+      def founder_to_h
+        return founder.to_h if founder.respond_to?(:to_h)
+
+        founder
       end
     end
   end

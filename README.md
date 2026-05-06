@@ -179,8 +179,14 @@ Use `Organization` when the current page represents an organization:
 organization_page_type = PageStructuredData::PageTypes::Organization.new(
   name: "RocketApex",
   url: "https://rocketapex.com",
+  description: "Open source projects from RocketApex",
   logo: "https://rocketapex.com/logo.png",
   same_as: ["https://github.com/RocketApex"],
+  founder: {
+    "@type": "Person",
+    name: "Jane Doe",
+    url: "https://example.com/jane"
+  },
   parent_organization: {
     name: "Parent Org",
     url: "https://parent.example"
@@ -293,13 +299,16 @@ Important methods:
 PageStructuredData::PageTypes::Organization.new(
   name:,
   url:,
+  description: nil,
   logo: nil,
   same_as: [],
-  parent_organization: nil
+  parent_organization: nil,
+  founder: nil
 )
 ```
 
 `parent_organization` should be a hash with `:name` and `:url` keys.
+`founder` should be a hash or another object that responds to `to_h`.
 
 Important methods:
 
