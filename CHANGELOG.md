@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+## 1.0.4 - 2026-05-06
+
 - Replace the bundled Slim meta tags partial with ERB so applications are not required to use Slim.
 - Remove the Slim runtime dependency.
 - Add view-rendering tests for the meta tags partial.
