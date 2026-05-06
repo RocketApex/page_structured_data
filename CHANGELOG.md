@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Add `PageStructuredData::PageTypes::Organization` for schema.org Organization JSON-LD.
+
 ## 1.0.7 - 2026-05-06
 
 - Remove unused generated Rails engine boilerplate files.

@@ -156,6 +156,60 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal [], json_ld["author"]
   end
 
+  test "organization renders required schema" do
+    page_type = PageStructuredData::PageTypes::Organization.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com"
+    )
+
+    json_ld = parse_json_ld(page_type.json_ld)
+
+    assert_equal "https://schema.org", json_ld["@context"]
+    assert_equal "Organization", json_ld["@type"]
+    assert_equal "RocketApex", json_ld["name"]
+    assert_equal "https://rocketapex.com", json_ld["url"]
+    refute json_ld.key?("logo")
+    refute json_ld.key?("sameAs")
+    refute json_ld.key?("parentOrganization")
+  end
+
+  test "organization is available from the gem entrypoint" do
+    assert PageStructuredData::PageTypes::Organization
+  end
+
+  test "organization renders optional schema" do
+    page_type = PageStructuredData::PageTypes::Organization.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com",
+      logo: "https://rocketapex.com/logo.png",
+      same_as: ["https://github.com/RocketApex"],
+      parent_organization: { name: "Parent Org", url: "https://parent.example" }
+    )
+
+    json_ld = parse_json_ld(page_type.json_ld)
+
+    assert_equal "https://rocketapex.com/logo.png", json_ld["logo"]
+    assert_equal ["https://github.com/RocketApex"], json_ld["sameAs"]
+    assert_equal(
+      { "@type" => "Organization", "name" => "Parent Org", "url" => "https://parent.example" },
+      json_ld["parentOrganization"]
+    )
+  end
+
+  test "page renders organization page type json ld" do
+    PageStructuredData.render_default_breadcrumb_json_ld = false
+    page_type = PageStructuredData::PageTypes::Organization.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com"
+    )
+    page = PageStructuredData::Page.new(title: "About", page_type: page_type)
+
+    json_ld = parse_json_ld(page.json_lds)
+
+    assert_equal "Organization", json_ld["@type"]
+    assert_equal "RocketApex", json_ld["name"]
+  end
+
   test "page renders breadcrumbs before page type json ld" do
     breadcrumbs = PageStructuredData::Breadcrumbs.new(
       hierarchy: [{ title: "Resources", href: "https://example.com/resources" }]

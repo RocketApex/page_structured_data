@@ -1,5 +1,12 @@
 require "page_structured_data/version"
 require "page_structured_data/engine"
+require_relative "../app/src/page_structured_data/anchors"
+require_relative "../app/src/page_structured_data/breadcrumbs"
+require_relative "../app/src/page_structured_data/page_types/article"
+require_relative "../app/src/page_structured_data/page_types/blog_posting"
+require_relative "../app/src/page_structured_data/page_types/news_article"
+require_relative "../app/src/page_structured_data/page_types/organization"
+require_relative "../app/src/page_structured_data/page"
 
 module PageStructuredData
   class << self

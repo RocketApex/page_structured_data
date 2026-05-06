@@ -14,6 +14,7 @@ It helps Rails applications render:
 - Google-compatible JSON-LD structured data
 - Breadcrumb structured data
 - Article structured data for `BlogPosting` and `NewsArticle`
+- Organization structured data
 
 ## Requirements
 
@@ -138,6 +139,7 @@ PageStructuredData includes page types for:
 
 - [`BlogPosting`](https://schema.org/BlogPosting)
 - [`NewsArticle`](https://schema.org/NewsArticle)
+- [`Organization`](https://schema.org/Organization)
 
 Use a page type when the current page represents an article:
 
@@ -167,6 +169,27 @@ article_page_type = PageStructuredData::PageTypes::BlogPosting.new(
 ```
 
 For news pages, use `PageStructuredData::PageTypes::NewsArticle` with the same arguments.
+
+Use `Organization` when the current page represents an organization:
+
+```ruby
+organization_page_type = PageStructuredData::PageTypes::Organization.new(
+  name: "RocketApex",
+  url: "https://rocketapex.com",
+  logo: "https://rocketapex.com/logo.png",
+  same_as: ["https://github.com/RocketApex"],
+  parent_organization: {
+    name: "Parent Org",
+    url: "https://parent.example"
+  }
+)
+
+@page_meta = PageStructuredData::Page.new(
+  title: "About RocketApex",
+  description: "Open source projects from RocketApex",
+  page_type: organization_page_type
+)
+```
 
 ## API Reference
 
@@ -232,6 +255,24 @@ Important methods:
 
 - `to_h`: returns a structured hash for article JSON-LD.
 - `json_ld`: returns an article JSON-LD script tag.
+
+### Organization Page Type
+
+```ruby
+PageStructuredData::PageTypes::Organization.new(
+  name:,
+  url:,
+  logo: nil,
+  same_as: [],
+  parent_organization: nil
+)
+```
+
+`parent_organization` should be a hash with `:name` and `:url` keys.
+
+Important methods:
+
+- `json_ld`: returns an organization JSON-LD script tag.
 
 ## Development
 
