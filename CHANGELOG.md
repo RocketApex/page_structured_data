@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Add JSON-LD escaping coverage for organization page types.
+
 ## 1.0.9 - 2026-05-06
 
 - Add release preparation script and release checklist documentation.

@@ -304,6 +304,31 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "https://example.com/authors/#{dangerous_value}", json_ld["author"].first["url"]
   end
 
+  test "organization json ld escapes name urls logo same as and parent organization" do
+    dangerous_value = "</script><script>alert(1)</script>"
+    page_type = PageStructuredData::PageTypes::Organization.new(
+      name: "Org #{dangerous_value}",
+      url: "https://example.com/#{dangerous_value}",
+      logo: "https://example.com/#{dangerous_value}.png",
+      same_as: ["https://github.com/#{dangerous_value}"],
+      parent_organization: {
+        name: "Parent #{dangerous_value}",
+        url: "https://parent.example/#{dangerous_value}"
+      }
+    )
+
+    html = page_type.json_ld
+    json_ld = parse_json_ld(html)
+
+    assert_json_ld_escapes_script_breaking_content(html, dangerous_value)
+    assert_equal "Org #{dangerous_value}", json_ld["name"]
+    assert_equal "https://example.com/#{dangerous_value}", json_ld["url"]
+    assert_equal "https://example.com/#{dangerous_value}.png", json_ld["logo"]
+    assert_equal ["https://github.com/#{dangerous_value}"], json_ld["sameAs"]
+    assert_equal "Parent #{dangerous_value}", json_ld["parentOrganization"]["name"]
+    assert_equal "https://parent.example/#{dangerous_value}", json_ld["parentOrganization"]["url"]
+  end
+
   private
 
   def parse_json_ld(html)
