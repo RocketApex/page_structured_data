@@ -1,5 +1,8 @@
 # PageStructuredData
 
+[![Gem Version](https://badge.fury.io/rb/page_structured_data.svg)](https://rubygems.org/gems/page_structured_data)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](MIT-LICENSE)
+
 PageStructuredData is a small Rails engine for rendering page-level SEO and social sharing metadata from one page object.
 
 It helps Rails applications render:

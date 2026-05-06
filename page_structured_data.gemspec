@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.authors     = ["Jey Geethan"]
   spec.email       = ["opensource@rocketapex.com"]
 
-  spec.summary       = "Easily create meta tags with structured data for webpages"
-  spec.description   = "This gem helps to create structured meta tags and ld+json schema for rails applications. It is easy to use and can be incorporated into any existing rails app."
+  spec.summary       = "Render SEO, social, and JSON-LD metadata for Rails pages"
+  spec.description   = "PageStructuredData gives Rails applications a small page object and view partial for rendering page titles, basic meta tags, Open Graph tags, Twitter card tags, breadcrumb JSON-LD, and article JSON-LD."
   spec.homepage      = "https://github.com/RocketApex/page_structured_data"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
@@ -18,10 +18,13 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/RocketApex/page_structured_data"
-  spec.metadata["changelog_uri"] = "https://github.com/RocketApex/page_structured_data"
+  spec.metadata["documentation_uri"] = "https://github.com/RocketApex/page_structured_data#readme"
+  spec.metadata["bug_tracker_uri"] = "https://github.com/RocketApex/page_structured_data/issues"
+  spec.metadata["changelog_uri"] = "https://github.com/RocketApex/page_structured_data/blob/main/CHANGELOG.md"
+  spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
+    Dir["{app,config,db,lib}/**/*", "CHANGELOG.md", "MIT-LICENSE", "Rakefile", "README.md"]
   end
 
   spec.add_dependency "rails", ">= 7.0.0"
