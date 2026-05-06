@@ -29,7 +29,7 @@ Because this is a public gem and repository, changes should be polished before r
 ## Things To Do
 
 1. Expand CI before widening Rails support beyond the currently tested Rails versions.
-2. Trim unused generated Rails engine files only if doing so does not affect packaged files or downstream apps.
+2. Consider adding release automation once the manual release process is stable.
 
 ## Verification Commands
 

@@ -1,8 +1,6 @@
 require "test_helper"
 
 class MetaTagsPartialTest < ActionView::TestCase
-  tests PageStructuredData::ApplicationHelper
-
   test "renders page title and meta tags" do
     page = PageStructuredData::Page.new(
       title: "Home",

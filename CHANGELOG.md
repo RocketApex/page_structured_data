@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Remove unused generated Rails engine boilerplate files.
+
 ## 1.0.6 - 2026-05-06
 
 - Add tests for HTML escaping in rendered meta tags.
