@@ -5,6 +5,7 @@ All notable changes to this project are documented here.
 ## Unreleased
 
 - Add release preparation script and release checklist documentation.
+- Add `to_h` schema hash API for organization page types.
 
 ## 1.0.8 - 2026-05-06
 

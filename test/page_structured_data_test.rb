@@ -196,6 +196,33 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     )
   end
 
+  test "organization exposes schema hash" do
+    page_type = PageStructuredData::PageTypes::Organization.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com",
+      logo: "https://rocketapex.com/logo.png",
+      same_as: ["https://github.com/RocketApex"],
+      parent_organization: { name: "Parent Org", url: "https://parent.example" }
+    )
+
+    assert_equal(
+      {
+        "@context" => "https://schema.org",
+        "@type" => "Organization",
+        "name" => "RocketApex",
+        "url" => "https://rocketapex.com",
+        "logo" => "https://rocketapex.com/logo.png",
+        "sameAs" => ["https://github.com/RocketApex"],
+        "parentOrganization" => {
+          "@type" => "Organization",
+          "name" => "Parent Org",
+          "url" => "https://parent.example"
+        }
+      },
+      page_type.to_h.deep_stringify_keys
+    )
+  end
+
   test "page renders organization page type json ld" do
     PageStructuredData.render_default_breadcrumb_json_ld = false
     page_type = PageStructuredData::PageTypes::Organization.new(

@@ -272,6 +272,7 @@ PageStructuredData::PageTypes::Organization.new(
 
 Important methods:
 
+- `to_h`: returns a structured hash for organization JSON-LD.
 - `json_ld`: returns an organization JSON-LD script tag.
 
 ## Development

@@ -14,7 +14,7 @@ module PageStructuredData
         @parent_organization = parent_organization
       end
 
-      def json_ld # rubocop:disable Metrics/MethodLength
+      def to_h # rubocop:disable Metrics/MethodLength
         node = {
           '@context': 'https://schema.org',
           '@type': 'Organization',
@@ -33,9 +33,13 @@ module PageStructuredData
           }
         end
 
+        node
+      end
+
+      def json_ld
         %(
         <script type="application/ld+json">
-          #{node.to_json}
+          #{to_h.to_json}
           </script>
         )
       end
