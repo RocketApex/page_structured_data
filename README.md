@@ -3,7 +3,9 @@
 [![Gem Version](https://badge.fury.io/rb/page_structured_data.svg)](https://rubygems.org/gems/page_structured_data)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](MIT-LICENSE)
 
-PageStructuredData is a small Rails engine for rendering page-level SEO and social sharing metadata from one page object.
+PageStructuredData is a small Rails engine that keeps SEO metadata, social sharing tags, and JSON-LD structured data in one page object and one view partial.
+
+Use it when a Rails app has metadata spread across layouts, helpers, presenters, and page-specific templates. PageStructuredData gives each page one explicit metadata object, then renders the `<title>`, meta tags, Open Graph tags, Twitter Card tags, breadcrumbs, and schema.org JSON-LD consistently.
 
 It helps Rails applications render:
 

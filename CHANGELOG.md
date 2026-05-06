@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Improve README and gem metadata positioning.
+
 ## 1.0.13 - 2026-05-06
 
 - Add `PageStructuredData::PageTypes::Person` for reusable schema.org person values.
