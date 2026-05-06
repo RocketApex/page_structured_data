@@ -17,10 +17,10 @@ class MetaTagsPartialTest < ActionView::TestCase
     assert_select 'meta[property="og:title"][content="Home"]'
     assert_select 'meta[property="og:description"][content="Welcome to the site"]'
     assert_select 'meta[property="og:image"][content="https://example.com/home.png"]'
-    assert_select 'meta[property="twitter:card"][content="summary_large_image"]'
-    assert_select 'meta[property="twitter:title"][content="Home"]'
-    assert_select 'meta[property="twitter:description"][content="Welcome to the site"]'
-    assert_select 'meta[property="twitter:image"][content="https://example.com/home.png"]'
+    assert_select 'meta[name="twitter:card"][content="summary_large_image"]'
+    assert_select 'meta[name="twitter:title"][content="Home"]'
+    assert_select 'meta[name="twitter:description"][content="Welcome to the site"]'
+    assert_select 'meta[name="twitter:image"][content="https://example.com/home.png"]'
   end
 
   test "uses default image when page image is absent" do
@@ -31,7 +31,7 @@ class MetaTagsPartialTest < ActionView::TestCase
 
     assert_select 'meta[name="image"][content="https://example.com/default.png"]'
     assert_select 'meta[property="og:image"][content="https://example.com/default.png"]'
-    assert_select 'meta[property="twitter:image"][content="https://example.com/default.png"]'
+    assert_select 'meta[name="twitter:image"][content="https://example.com/default.png"]'
   end
 
   test "uses page fallback image before default image local" do
@@ -45,7 +45,7 @@ class MetaTagsPartialTest < ActionView::TestCase
 
     assert_select 'meta[name="image"][content="https://example.com/fallback.png"]'
     assert_select 'meta[property="og:image"][content="https://example.com/fallback.png"]'
-    assert_select 'meta[property="twitter:image"][content="https://example.com/fallback.png"]'
+    assert_select 'meta[name="twitter:image"][content="https://example.com/fallback.png"]'
   end
 
   test "renders canonical url" do
@@ -97,7 +97,7 @@ class MetaTagsPartialTest < ActionView::TestCase
     assert_select 'meta[name="title"]'
     assert_select 'meta[name="description"]'
     assert_select 'meta[name="image"]'
-    assert_select 'meta[property="twitter:card"][content="summary_large_image"]'
+    assert_select 'meta[name="twitter:card"][content="summary_large_image"]'
     assert_select 'script[type="application/ld+json"]', count: 0
   end
 end

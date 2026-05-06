@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Render Twitter Card meta tags with `name` attributes.
 - Update gem metadata to mention Organization and WebSite JSON-LD support.
 
 ## 1.0.11 - 2026-05-06
