@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Add reusable interaction statistics for article-like page types.
+- Add `PageStructuredData::PageTypes::DiscussionForumPosting` for forum-style posts.
 - Render Twitter Card meta tags with `name` attributes.
 - Update gem metadata to mention Organization and WebSite JSON-LD support.
 

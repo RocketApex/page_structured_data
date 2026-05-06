@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email       = ["opensource@rocketapex.com"]
 
   spec.summary       = "Render SEO, social, and JSON-LD metadata for Rails pages"
-  spec.description   = "PageStructuredData gives Rails applications a small page object and view partial for rendering page titles, basic meta tags, Open Graph tags, Twitter card tags, breadcrumb JSON-LD, article JSON-LD, Organization JSON-LD, and WebSite JSON-LD."
+  spec.description   = "PageStructuredData gives Rails applications a small page object and view partial for rendering page titles, basic meta tags, Open Graph tags, Twitter card tags, breadcrumb JSON-LD, article and forum post JSON-LD, Organization JSON-LD, WebSite JSON-LD, and public interaction statistics."
   spec.homepage      = "https://github.com/RocketApex/page_structured_data"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")

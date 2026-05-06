@@ -141,6 +141,66 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal [{ "@type" => "Person", "name" => "Jane Doe", "url" => "https://example.com/jane" }], schema["author"]
   end
 
+  test "blog posting renders interaction statistics from convenience counts" do
+    page_type = PageStructuredData::PageTypes::BlogPosting.new(
+      headline: "Launch Notes",
+      published_at: Time.zone.parse("2026-05-01 10:00:00 UTC"),
+      updated_at: Time.zone.parse("2026-05-02 10:00:00 UTC"),
+      likes_count: 42,
+      comments_count: 0,
+      shares_count: 7
+    )
+
+    json_ld = parse_json_ld(page_type.json_ld)
+
+    assert_equal(
+      [
+        {
+          "@type" => "InteractionCounter",
+          "interactionType" => { "@type" => "LikeAction" },
+          "userInteractionCount" => 42
+        },
+        {
+          "@type" => "InteractionCounter",
+          "interactionType" => { "@type" => "CommentAction" },
+          "userInteractionCount" => 0
+        },
+        {
+          "@type" => "InteractionCounter",
+          "interactionType" => { "@type" => "ShareAction" },
+          "userInteractionCount" => 7
+        }
+      ],
+      json_ld["interactionStatistic"]
+    )
+  end
+
+  test "blog posting renders provided interaction statistics" do
+    page_type = PageStructuredData::PageTypes::BlogPosting.new(
+      headline: "Launch Notes",
+      published_at: Time.zone.parse("2026-05-01 10:00:00 UTC"),
+      updated_at: Time.zone.parse("2026-05-02 10:00:00 UTC"),
+      interaction_statistics: [
+        PageStructuredData::PageTypes::InteractionStatistic.new(
+          interaction_type: :like,
+          user_interaction_count: 42
+        ),
+        {
+          "@type" => "InteractionCounter",
+          interactionType: { "@type" => "WatchAction" },
+          userInteractionCount: 12
+        }
+      ]
+    )
+
+    json_ld = parse_json_ld(page_type.json_ld)
+
+    assert_equal "LikeAction", json_ld["interactionStatistic"][0]["interactionType"]["@type"]
+    assert_equal 42, json_ld["interactionStatistic"][0]["userInteractionCount"]
+    assert_equal "WatchAction", json_ld["interactionStatistic"][1]["interactionType"]["@type"]
+    assert_equal 12, json_ld["interactionStatistic"][1]["userInteractionCount"]
+  end
+
   test "news article renders article schema" do
     page_type = PageStructuredData::PageTypes::NewsArticle.new(
       headline: "Launch Notes",
@@ -154,6 +214,55 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "Launch Notes", json_ld["headline"]
     assert_equal [], json_ld["image"]
     assert_equal [], json_ld["author"]
+  end
+
+  test "interaction statistic exposes schema hash" do
+    interaction_statistic = PageStructuredData::PageTypes::InteractionStatistic.new(
+      interaction_type: :like,
+      user_interaction_count: 42,
+      interaction_service: {
+        "@type" => "WebSite",
+        name: "Example",
+        url: "https://example.com"
+      }
+    )
+
+    assert_equal(
+      {
+        "@type" => "InteractionCounter",
+        "interactionType" => { "@type" => "LikeAction" },
+        "userInteractionCount" => 42,
+        "interactionService" => {
+          "@type" => "WebSite",
+          "name" => "Example",
+          "url" => "https://example.com"
+        }
+      },
+      interaction_statistic.to_h.deep_stringify_keys
+    )
+  end
+
+  test "discussion forum posting renders article-like schema" do
+    page_type = PageStructuredData::PageTypes::DiscussionForumPosting.new(
+      headline: "Is schema.org useful?",
+      text: "A public forum post about structured data.",
+      image: "https://example.com/post.png",
+      url: "https://example.com/posts/1",
+      published_at: Time.zone.parse("2026-05-01 10:00:00 UTC"),
+      updated_at: Time.zone.parse("2026-05-02 10:00:00 UTC"),
+      authors: [{ name: "Jane Doe", url: "https://example.com/jane" }],
+      interaction_statistics: [PageStructuredData::PageTypes::InteractionStatistic.comment(25)]
+    )
+
+    json_ld = parse_json_ld(page_type.json_ld)
+
+    assert_equal "DiscussionForumPosting", json_ld["@type"]
+    assert_equal "Is schema.org useful?", json_ld["headline"]
+    assert_equal "A public forum post about structured data.", json_ld["articleBody"]
+    assert_equal ["https://example.com/post.png"], json_ld["image"]
+    assert_equal "https://example.com/posts/1", json_ld["url"]
+    assert_equal "CommentAction", json_ld["interactionStatistic"][0]["interactionType"]["@type"]
+    assert_equal 25, json_ld["interactionStatistic"][0]["userInteractionCount"]
   end
 
   test "organization renders required schema" do

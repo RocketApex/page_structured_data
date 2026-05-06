@@ -14,6 +14,8 @@ It helps Rails applications render:
 - Google-compatible JSON-LD structured data
 - Breadcrumb structured data
 - Article structured data for `BlogPosting` and `NewsArticle`
+- Discussion forum post structured data
+- Interaction statistics for public engagement counts
 - Organization and WebSite structured data
 
 ## Requirements
@@ -141,6 +143,7 @@ PageStructuredData includes page types for:
 
 - [`BlogPosting`](https://schema.org/BlogPosting)
 - [`NewsArticle`](https://schema.org/NewsArticle)
+- [`DiscussionForumPosting`](https://schema.org/DiscussionForumPosting)
 - [`Organization`](https://schema.org/Organization)
 - [`WebSite`](https://schema.org/WebSite)
 
@@ -172,6 +175,42 @@ article_page_type = PageStructuredData::PageTypes::BlogPosting.new(
 ```
 
 For news pages, use `PageStructuredData::PageTypes::NewsArticle` with the same arguments.
+
+Article-like page types can include public engagement counts as interaction statistics:
+
+```ruby
+article_page_type = PageStructuredData::PageTypes::BlogPosting.new(
+  headline: @article.title,
+  published_at: @article.published_at,
+  updated_at: @article.updated_at,
+  likes_count: @article.likes_count,
+  comments_count: @article.comments_count,
+  shares_count: @article.shares_count
+)
+```
+
+Only include engagement counts that are public and visible on the rendered page.
+
+Use `DiscussionForumPosting` when the current page represents a public user-authored forum or community post:
+
+```ruby
+forum_post_page_type = PageStructuredData::PageTypes::DiscussionForumPosting.new(
+  headline: @post.title,
+  text: @post.content_plaintext,
+  url: post_url(@post),
+  published_at: @post.created_at,
+  updated_at: @post.updated_at,
+  authors: [
+    {
+      name: @post.user.name,
+      url: user_url(@post.user)
+    }
+  ],
+  interaction_statistics: [
+    PageStructuredData::PageTypes::InteractionStatistic.comment(@post.comments_count)
+  ]
+)
+```
 
 Use `Organization` when the current page represents an organization:
 
@@ -272,7 +311,15 @@ PageStructuredData::PageTypes::BlogPosting.new(
   published_at:,
   updated_at:,
   images: [],
-  authors: []
+  authors: [],
+  image: nil,
+  article_body: nil,
+  text: nil,
+  url: nil,
+  interaction_statistics: [],
+  likes_count: nil,
+  comments_count: nil,
+  shares_count: nil
 )
 ```
 
@@ -282,16 +329,69 @@ PageStructuredData::PageTypes::NewsArticle.new(
   published_at:,
   updated_at:,
   images: [],
-  authors: []
+  authors: [],
+  image: nil,
+  article_body: nil,
+  text: nil,
+  url: nil,
+  interaction_statistics: [],
+  likes_count: nil,
+  comments_count: nil,
+  shares_count: nil
 )
 ```
 
 `authors` should be an array of hashes with `:name` and `:url` keys.
+`image` is a convenience option for one image URL. Use `images` when passing multiple image URLs.
+`text` is an alias for `article_body`.
+`interaction_statistics` should be an array of `PageStructuredData::PageTypes::InteractionStatistic` objects or schema-compatible hashes.
 
 Important methods:
 
 - `to_h`: returns a structured hash for article JSON-LD.
 - `json_ld`: returns an article JSON-LD script tag.
+
+```ruby
+PageStructuredData::PageTypes::DiscussionForumPosting.new(
+  headline:,
+  published_at:,
+  updated_at:,
+  images: [],
+  authors: [],
+  image: nil,
+  article_body: nil,
+  text: nil,
+  url: nil,
+  interaction_statistics: [],
+  likes_count: nil,
+  comments_count: nil,
+  shares_count: nil
+)
+```
+
+### Interaction Statistics
+
+```ruby
+PageStructuredData::PageTypes::InteractionStatistic.new(
+  interaction_type: :like,
+  user_interaction_count: 42,
+  interaction_service: nil
+)
+```
+
+Convenience constructors are also available:
+
+```ruby
+PageStructuredData::PageTypes::InteractionStatistic.like(42)
+PageStructuredData::PageTypes::InteractionStatistic.comment(12)
+PageStructuredData::PageTypes::InteractionStatistic.share(7)
+```
+
+Supported shorthand interaction types are `:like`, `:comment`, and `:share`. Custom schema.org action types can be passed as strings or hashes.
+
+Important methods:
+
+- `to_h`: returns a structured hash for `InteractionCounter` JSON-LD.
 
 ### Organization Page Type
 
