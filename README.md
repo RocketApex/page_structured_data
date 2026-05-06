@@ -18,7 +18,6 @@ It helps Rails applications render:
 ## Requirements
 
 - Rails 7.0 or newer
-- Slim 4.1 or newer
 - A Ruby version supported by your Rails version
 
 ## Installation

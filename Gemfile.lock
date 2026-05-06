@@ -3,7 +3,6 @@ PATH
   specs:
     page_structured_data (1.0.3)
       rails (>= 7.0.0)
-      slim (>= 4.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -146,9 +145,6 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.3.1)
-    slim (5.2.1)
-      temple (~> 0.10.0)
-      tilt (>= 2.1.0)
     sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -158,9 +154,7 @@ GEM
       sprockets (>= 3.0.0)
     sqlite3 (1.6.9-aarch64-linux)
     sqlite3 (1.6.9-arm64-darwin)
-    temple (0.10.4)
     thor (1.4.0)
-    tilt (2.6.1)
     timeout (0.6.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
