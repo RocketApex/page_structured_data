@@ -1,103 +1,251 @@
 # PageStructuredData
-Use this gem to churn out meta tags for your rails webpages. This also renders meta tags for the following:
-1. Page `<title>` tag with proper hyphenation when used with breadcrumbs
-2. Basic `<meta>` tags
-2. Twitter meta tags
-3. Open graph meta tags
-4. Google Schema JSON-LD `<script>` tags
+
+PageStructuredData is a small Rails engine for rendering page-level SEO and social sharing metadata from one page object.
+
+It helps Rails applications render:
+
+- A `<title>` tag
+- Basic `title`, `description`, and `image` meta tags
+- Open Graph tags
+- Twitter card tags
+- Google-compatible JSON-LD structured data
+- Breadcrumb structured data
+- Article structured data for `BlogPosting` and `NewsArticle`
+
+## Requirements
+
+- Rails 7.0 or newer
+- Slim 4.1 or newer
+- A Ruby version supported by your Rails version
 
 ## Installation
-Add this line to your application's Gemfile:
+
+Add the gem to your application's Gemfile:
 
 ```ruby
 gem "page_structured_data"
 ```
 
-And then execute:
+Then install it:
+
 ```bash
-$ bundle
+bundle install
 ```
 
-Or install it yourself as:
-```bash
-$ gem install page_structured_data
-```
+## Configuration
 
-## Usage
-
-### Layouts
-
-Add the following in your layout to include the basic meta tags by default
-
-```erbruby
-<%= render 'page_structured_data/meta_tags', page: @page_meta, 
-    default_image_url: image_url('<path_to_default_image>') %>
-```
-
-Note: This doesn't include csrf or any other security or viewport related meta tags.
-
-### Views
-
-In your views, please define the `@page_meta` as follows
+Configure application-wide defaults in an initializer:
 
 ```ruby
-<% @page_meta = PageStructuredData::Page.new(title: 'Home', extra_title: "Official Page",
-        description: 'Welcome to my Page') %>
-```
-
-The instance variable will be used in the layout to create proper meta tags. Most attributes are self explanatory. `extra_title` is used to append to the title. 
-
-### Config
-
-Configure the application wide settings as follows:
-
-```erbruby
 # config/initializers/page_structured_data.rb
 Rails.application.config.after_initialize do
   PageStructuredData.config do |config|
-    config.base_app_name = 'AwesomestApp' # or use any application constant as this is called after_initialize
+    config.base_app_name = "AwesomestApp"
   end
 end
 ```
 
-### Breadcrumbs
+`base_app_name` is appended to generated page titles.
 
-Create a list of breadcrumbs like this:
+For example:
 
-```erbruby
-<% breadcrumb = PageStructuredData::Breadcrumbs.new(hierarchy: [{ title: 'Resources', href: resources_url }, { title: 'Articles', href: resources_articles_url }]) %>
+```ruby
+PageStructuredData.base_app_name = "AwesomestApp"
+
+page = PageStructuredData::Page.new(
+  title: "Pricing",
+  extra_title: "Plans",
+  description: "Simple pricing for AwesomestApp"
+)
+
+page.page_title
+# => "Pricing - Plans - AwesomestApp"
 ```
 
-And include it in the `Page.new` as:
+## Rendering Meta Tags
 
-```erbruby
-<% @page_meta = PageStructuredData::Page.new(title: 'Home', extra_title: "Official Page",
-        description: 'Welcome to my Page', breadcrumb: breadcrumb) %>
+Render the bundled partial from your application layout:
+
+```erb
+<%= render "page_structured_data/meta_tags",
+           page: @page_meta,
+           default_image_url: image_url("social/default.png") %>
 ```
 
-This will create a JSON+LD breadcrumbs similar to [Breadcrumbs](https://developers.google.com/search/docs/appearance/structured-data/breadcrumb)
+`default_image_url` is optional. It is used when the page object does not provide an image.
 
-### PageTypes
+This partial is only responsible for SEO, social sharing, and structured-data tags. Keep your normal Rails layout tags, such as CSRF, CSP, viewport, and favicon tags, in your application layout.
 
-Currently this gem supports the following page types:
+## Basic Page Metadata
 
-* [BlogPosting](https://schema.org/BlogPosting)
-* [NewsArticle](https://schema.org/NewsArticle)
+Set `@page_meta` in the controller or view before the layout renders:
 
-To use these, it is similar to breadcrumbs: include them in `Page.new` and it the json+ld will be automatically included.
-
-```erbruby
-<% article_page_type = PageStructuredData::PageTypes::BlogPosting.new(headline: @article.title, published_at: @article.published_at,
-        updated_at: @article.updated_at, authors: [name: @article.authors.first.name, url: @article.authors.first.website],
-        images: [main_app.url_for(@article.cover_image.variant(:standard))]) %>
-<% @page_meta = PageStructuredData::Page.new(title: 'Home', extra_title: "Official Page",
-                                             description: 'Welcome to my Page', page_type: article_page_type) %>
+```ruby
+@page_meta = PageStructuredData::Page.new(
+  title: "Home",
+  extra_title: "Official Page",
+  description: "Welcome to my page",
+  image: image_url("social/home.png")
+)
 ```
 
-Just replace BlogPosting class with the other type for other page types.
+The generated title is built from:
+
+1. `title`
+2. `extra_title`, when present
+3. breadcrumb titles, when present
+4. `PageStructuredData.base_app_name`, when present
+
+The parts are joined with `" - "`.
+
+## Breadcrumbs
+
+Create breadcrumbs with a hierarchy of page titles and URLs:
+
+```ruby
+breadcrumbs = PageStructuredData::Breadcrumbs.new(
+  hierarchy: [
+    { title: "Resources", href: resources_url },
+    { title: "Articles", href: resources_articles_url }
+  ]
+)
+```
+
+Pass the breadcrumbs into the page object:
+
+```ruby
+@page_meta = PageStructuredData::Page.new(
+  title: "How to Structure Metadata",
+  description: "A guide to page metadata and structured data",
+  breadcrumb: breadcrumbs
+)
+```
+
+This renders `BreadcrumbList` JSON-LD similar to Google's breadcrumb structured data format.
+
+Current compatibility note: when no breadcrumb object is passed, `PageStructuredData::Page` still creates an empty breadcrumb trail for the current page. This is existing behavior and should be considered part of the current public API.
+
+## Article Page Types
+
+PageStructuredData includes page types for:
+
+- [`BlogPosting`](https://schema.org/BlogPosting)
+- [`NewsArticle`](https://schema.org/NewsArticle)
+
+Use a page type when the current page represents an article:
+
+```ruby
+article_page_type = PageStructuredData::PageTypes::BlogPosting.new(
+  headline: @article.title,
+  published_at: @article.published_at,
+  updated_at: @article.updated_at,
+  authors: [
+    {
+      name: @article.authors.first.name,
+      url: @article.authors.first.website
+    }
+  ],
+  images: [
+    main_app.url_for(@article.cover_image.variant(:standard))
+  ]
+)
+
+@page_meta = PageStructuredData::Page.new(
+  title: @article.title,
+  description: @article.summary,
+  image: main_app.url_for(@article.cover_image.variant(:standard)),
+  breadcrumb: breadcrumbs,
+  page_type: article_page_type
+)
+```
+
+For news pages, use `PageStructuredData::PageTypes::NewsArticle` with the same arguments.
+
+## API Reference
+
+### `PageStructuredData::Page`
+
+```ruby
+PageStructuredData::Page.new(
+  title:,
+  description: nil,
+  image: nil,
+  extra_title: "",
+  breadcrumb: nil,
+  page_type: nil
+)
+```
+
+Important methods:
+
+- `page_title`: returns the composed page title.
+- `json_lds`: returns the JSON-LD script tags for breadcrumbs and page type data.
+
+### `PageStructuredData::Breadcrumbs`
+
+```ruby
+PageStructuredData::Breadcrumbs.new(
+  hierarchy: [
+    { title: "Resources", href: "https://example.com/resources" }
+  ]
+)
+```
+
+Important methods:
+
+- `titles`: returns breadcrumb titles.
+- `json_ld(current_page_title:)`: returns a `BreadcrumbList` JSON-LD script tag.
+
+### Article Page Types
+
+```ruby
+PageStructuredData::PageTypes::BlogPosting.new(
+  headline:,
+  published_at:,
+  updated_at:,
+  images: [],
+  authors: []
+)
+```
+
+```ruby
+PageStructuredData::PageTypes::NewsArticle.new(
+  headline:,
+  published_at:,
+  updated_at:,
+  images: [],
+  authors: []
+)
+```
+
+`authors` should be an array of hashes with `:name` and `:url` keys.
+
+## Development
+
+Run the test suite:
+
+```bash
+bundle exec rake test
+```
+
+Verify the gem can be required:
+
+```bash
+ruby -Ilib -e 'require "page_structured_data"; puts PageStructuredData::VERSION'
+```
+
+## Compatibility Policy
+
+This gem is used in production applications. Changes should preserve existing public APIs and rendered output unless a breaking change is intentionally released in a major version.
+
+Prefer additive APIs and tests that document current behavior before refactoring internals.
 
 ## Contributing
-Please raise a PR to be validated and merged.
+
+Bug reports and pull requests are welcome on GitHub.
+
+When contributing, please include tests for user-visible behavior and keep changes focused. For compatibility-sensitive behavior, describe the expected impact in the pull request.
 
 ## License
+
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
