@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+## 1.0.11 - 2026-05-06
+
 - Add optional `description` and `founder` support to organization page types.
 
 ## 1.0.10 - 2026-05-06
