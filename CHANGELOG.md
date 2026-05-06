@@ -11,6 +11,7 @@ All notable changes to this project are documented here.
 - Add `to_h` schema hash APIs for breadcrumbs and article page types.
 - Add tests for pages that render both breadcrumb and page type JSON-LD.
 - Align the gemspec Ruby requirement with the Rails 7 baseline.
+- Add GitHub Actions CI for tests, require verification, and gem build verification.
 
 ## 1.0.4 - 2026-05-06
 

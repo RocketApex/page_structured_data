@@ -28,7 +28,7 @@ Because this is a public gem and repository, changes should be polished before r
 ## Things To Do
 
 1. Decide whether default breadcrumb JSON-LD should remain the default forever, become configurable, or change only in a future major release.
-2. Add CI for the intended Ruby and Rails versions.
+2. Expand CI to a broader Rails/Ruby matrix if the gem commits to supporting more than the current baseline.
 3. Trim unused generated Rails engine files only if doing so does not affect packaged files or downstream apps.
 
 ## Verification Commands
