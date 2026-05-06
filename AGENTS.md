@@ -23,14 +23,13 @@ Because this is a public gem and repository, changes should be polished before r
 - `Page` currently creates an empty `Breadcrumbs` object when no breadcrumb is passed, so `json_lds` emits breadcrumb JSON-LD for every page. This may be surprising, but it is existing behavior and should not be changed in a patch release.
 - `BlogPosting` and `NewsArticle` share article behavior through `PageStructuredData::PageTypes::Article`.
 - JSON-LD methods currently return full `<script>` HTML strings, and the ERB partial marks the combined output as `html_safe`. A future safer API could expose hashes while keeping `json_ld` backward compatible.
-- The gemspec says Ruby `>= 2.3.0`, but Rails `>= 7.0.0` implies a newer practical Ruby baseline. Aligning this is a compatibility-facing decision.
+- The gemspec requires Ruby `>= 2.7.0`, matching the Rails 7 baseline.
 
 ## Things To Do
 
 1. Decide whether default breadcrumb JSON-LD should remain the default forever, become configurable, or change only in a future major release.
-2. Review gemspec Ruby/Rails support and document the supported matrix in `README.md`.
-3. Add CI for the intended Ruby and Rails versions.
-4. Trim unused generated Rails engine files only if doing so does not affect packaged files or downstream apps.
+2. Add CI for the intended Ruby and Rails versions.
+3. Trim unused generated Rails engine files only if doing so does not affect packaged files or downstream apps.
 
 ## Verification Commands
 

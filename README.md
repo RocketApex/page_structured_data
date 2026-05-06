@@ -18,7 +18,9 @@ It helps Rails applications render:
 ## Requirements
 
 - Rails 7.0 or newer
-- A Ruby version supported by your Rails version
+- Ruby 2.7 or newer
+
+Rails 7.0 requires Ruby 2.7 or newer, so this gem follows that same baseline. Newer Rails versions may require newer Ruby versions; use the Ruby version supported by your Rails release.
 
 ## Installation
 

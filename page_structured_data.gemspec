@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.description   = "PageStructuredData gives Rails applications a small page object and view partial for rendering page titles, basic meta tags, Open Graph tags, Twitter card tags, breadcrumb JSON-LD, and article JSON-LD."
   spec.homepage      = "https://github.com/RocketApex/page_structured_data"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the "allowed_push_host"
   # to allow pushing to a single host or delete this section to allow pushing to any host.

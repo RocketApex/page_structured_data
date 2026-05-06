@@ -10,6 +10,7 @@ All notable changes to this project are documented here.
 - Extract shared article JSON-LD behavior for `BlogPosting` and `NewsArticle`.
 - Add `to_h` schema hash APIs for breadcrumbs and article page types.
 - Add tests for pages that render both breadcrumb and page type JSON-LD.
+- Align the gemspec Ruby requirement with the Rails 7 baseline.
 
 ## 1.0.4 - 2026-05-06
 
