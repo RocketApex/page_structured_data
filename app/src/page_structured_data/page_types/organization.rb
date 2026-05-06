@@ -4,6 +4,8 @@ module PageStructuredData
   module PageTypes
     # Organization structured data for a page
     class Organization
+      include SchemaNode
+
       attr_reader :name, :url, :description, :logo, :same_as, :parent_organization, :founder
 
       def initialize(name:, url:, description: nil, logo: nil, same_as: [], parent_organization: nil, founder: nil)
@@ -11,33 +13,23 @@ module PageStructuredData
         @url = url
         @description = description
         @logo = logo
-        @same_as = same_as
+        @same_as = Array(same_as)
         @parent_organization = parent_organization
         @founder = founder
       end
 
       def to_h # rubocop:disable Metrics/MethodLength
-        node = {
+        compact_node(
           '@context': 'https://schema.org',
           '@type': 'Organization',
-        }
-
-        node[:name] = name
-        node[:url] = url
-        node[:description] = description if description.present?
-        node[:logo] = logo if logo.present?
-        node[:sameAs] = same_as if same_as.present?
-        node[:founder] = founder_to_h if founder.present?
-
-        if parent_organization.present?
-          node[:parentOrganization] = {
-            '@type': 'Organization',
-            name: parent_organization[:name],
-            url: parent_organization[:url],
-          }
-        end
-
-        node
+          name: name,
+          url: url,
+          description: description,
+          logo: logo,
+          sameAs: same_as,
+          founder: object_to_h(founder),
+          parentOrganization: parent_organization_to_h
+        )
       end
 
       def json_ld
@@ -50,10 +42,15 @@ module PageStructuredData
 
       private
 
-      def founder_to_h
-        return founder.to_h if founder.respond_to?(:to_h)
+      def parent_organization_to_h
+        return object_to_h(parent_organization) if parent_organization.respond_to?(:to_h) && !parent_organization.is_a?(Hash)
+        return unless parent_organization.present?
 
-        founder
+        compact_node(
+          '@type': 'Organization',
+          name: parent_organization[:name] || parent_organization['name'],
+          url: parent_organization[:url] || parent_organization['url']
+        )
       end
     end
   end

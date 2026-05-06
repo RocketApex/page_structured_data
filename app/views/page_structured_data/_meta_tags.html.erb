@@ -11,16 +11,28 @@
 <% end %>
 
 <meta name="title" content="<%= title %>">
+<% if description.present? %>
 <meta name="description" content="<%= description %>">
+<% end %>
+<% if image.present? %>
 <meta name="image" content="<%= image %>">
+<% end %>
 
 <meta property="og:title" content="<%= title %>">
+<% if description.present? %>
 <meta property="og:description" content="<%= description %>">
+<% end %>
+<% if image.present? %>
 <meta property="og:image" content="<%= image %>">
+<% end %>
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<%= title %>">
+<% if description.present? %>
 <meta name="twitter:description" content="<%= description %>">
+<% end %>
+<% if image.present? %>
 <meta name="twitter:image" content="<%= image %>">
+<% end %>
 
 <%= page&.json_lds&.html_safe %>

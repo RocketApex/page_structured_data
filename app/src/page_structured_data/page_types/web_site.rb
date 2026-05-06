@@ -4,6 +4,8 @@ module PageStructuredData
   module PageTypes
     # WebSite structured data for a page
     class WebSite
+      include SchemaNode
+
       attr_reader :name, :url, :description, :publisher, :potential_action
 
       def initialize(name:, url:, description: nil, publisher: nil, potential_action: nil)
@@ -15,18 +17,15 @@ module PageStructuredData
       end
 
       def to_h
-        node = {
+        compact_node(
           '@context': 'https://schema.org',
           '@type': 'WebSite',
           name: name,
           url: url,
-        }
-
-        node[:description] = description if description.present?
-        node[:publisher] = publisher_to_h if publisher.present?
-        node[:potentialAction] = potential_action if potential_action.present?
-
-        node
+          description: description,
+          publisher: object_to_h(publisher),
+          potentialAction: object_to_h(potential_action)
+        )
       end
 
       def json_ld
@@ -37,13 +36,6 @@ module PageStructuredData
         )
       end
 
-      private
-
-      def publisher_to_h
-        return publisher.to_h if publisher.respond_to?(:to_h)
-
-        publisher
-      end
     end
   end
 end

@@ -95,9 +95,29 @@ class MetaTagsPartialTest < ActionView::TestCase
 
     assert_select "title", text: ""
     assert_select 'meta[name="title"]'
-    assert_select 'meta[name="description"]'
-    assert_select 'meta[name="image"]'
+    assert_select 'meta[name="description"]', count: 0
+    assert_select 'meta[name="image"]', count: 0
+    assert_select 'meta[property="og:description"]', count: 0
+    assert_select 'meta[property="og:image"]', count: 0
     assert_select 'meta[name="twitter:card"][content="summary_large_image"]'
+    assert_select 'meta[name="twitter:description"]', count: 0
+    assert_select 'meta[name="twitter:image"]', count: 0
     assert_select 'script[type="application/ld+json"]', count: 0
+  end
+
+  test "omits blank description and image tags" do
+    page = PageStructuredData::Page.new(title: "Home")
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_select 'meta[name="title"][content="Home"]'
+    assert_select 'meta[property="og:title"][content="Home"]'
+    assert_select 'meta[name="twitter:title"][content="Home"]'
+    assert_select 'meta[name="description"]', count: 0
+    assert_select 'meta[name="image"]', count: 0
+    assert_select 'meta[property="og:description"]', count: 0
+    assert_select 'meta[property="og:image"]', count: 0
+    assert_select 'meta[name="twitter:description"]', count: 0
+    assert_select 'meta[name="twitter:image"]', count: 0
   end
 end

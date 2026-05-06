@@ -35,6 +35,20 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "Launch Notes - Official - Articles - Resources - Example", page.page_title
   end
 
+  test "page base app name overrides global base app name" do
+    PageStructuredData.base_app_name = "Global"
+    page = PageStructuredData::Page.new(title: "Home", base_app_name: "Local")
+
+    assert_equal "Home - Local", page.page_title
+  end
+
+  test "page base app name can suppress global base app name" do
+    PageStructuredData.base_app_name = "Global"
+    page = PageStructuredData::Page.new(title: "Home", base_app_name: "")
+
+    assert_equal "Home", page.page_title
+  end
+
   test "pages include default breadcrumb json ld" do
     page = PageStructuredData::Page.new(title: "Home")
 
@@ -50,6 +64,29 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     page = PageStructuredData::Page.new(title: "Home")
 
     assert_equal "", page.json_lds
+  end
+
+  test "pages can opt out of explicit breadcrumb json ld" do
+    breadcrumbs = PageStructuredData::Breadcrumbs.new(
+      hierarchy: [{ title: "Resources", href: "https://example.com/resources" }]
+    )
+    page = PageStructuredData::Page.new(
+      title: "Article",
+      breadcrumb: breadcrumbs,
+      render_breadcrumb_json_ld: false
+    )
+
+    assert_equal "", page.json_lds
+  end
+
+  test "pages can opt in to default breadcrumb json ld when global default is disabled" do
+    PageStructuredData.render_default_breadcrumb_json_ld = false
+    page = PageStructuredData::Page.new(title: "Home", render_breadcrumb_json_ld: true)
+
+    json_ld = parse_json_ld(page.json_lds)
+
+    assert_equal "BreadcrumbList", json_ld["@type"]
+    assert_equal "Home", json_ld["itemListElement"].first["name"]
   end
 
   test "explicit breadcrumbs render when default breadcrumb json ld is disabled" do
@@ -121,6 +158,47 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "Launch Notes", json_ld["headline"]
     assert_equal ["https://example.com/cover.png"], json_ld["image"]
     assert_equal [{ "@type" => "Person", "name" => "Jane Doe", "url" => "https://example.com/jane" }], json_ld["author"]
+  end
+
+  test "blog posting omits blank author fields" do
+    page_type = PageStructuredData::PageTypes::BlogPosting.new(
+      headline: "Launch Notes",
+      published_at: Time.zone.parse("2026-05-01 10:00:00 UTC"),
+      updated_at: Time.zone.parse("2026-05-02 10:00:00 UTC"),
+      authors: [{ name: "Jane Doe" }]
+    )
+
+    json_ld = parse_json_ld(page_type.json_ld)
+
+    assert_equal [{ "@type" => "Person", "name" => "Jane Doe" }], json_ld["author"]
+  end
+
+  test "blog posting accepts person and to h author objects" do
+    custom_author = Struct.new(:name) do
+      def to_h
+        { "@type" => "Person", name: name }
+      end
+    end.new("Asha Rao")
+
+    page_type = PageStructuredData::PageTypes::BlogPosting.new(
+      headline: "Launch Notes",
+      published_at: Time.zone.parse("2026-05-01 10:00:00 UTC"),
+      updated_at: Time.zone.parse("2026-05-02 10:00:00 UTC"),
+      authors: [
+        PageStructuredData::PageTypes::Person.new(name: "Jane Doe", url: "https://example.com/jane"),
+        custom_author
+      ]
+    )
+
+    json_ld = parse_json_ld(page_type.json_ld)
+
+    assert_equal(
+      [
+        { "@type" => "Person", "name" => "Jane Doe", "url" => "https://example.com/jane" },
+        { "@type" => "Person", "name" => "Asha Rao" }
+      ],
+      json_ld["author"]
+    )
   end
 
   test "blog posting exposes schema hash" do
@@ -239,6 +317,22 @@ class PageStructuredDataTest < ActiveSupport::TestCase
         }
       },
       interaction_statistic.to_h.deep_stringify_keys
+    )
+  end
+
+  test "person exposes compact schema hash" do
+    person = PageStructuredData::PageTypes::Person.new(
+      name: "Jane Doe",
+      same_as: ["https://example.com/jane"]
+    )
+
+    assert_equal(
+      {
+        "@type" => "Person",
+        "name" => "Jane Doe",
+        "sameAs" => ["https://example.com/jane"]
+      },
+      person.to_h.deep_stringify_keys
     )
   end
 

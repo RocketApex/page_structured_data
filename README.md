@@ -16,6 +16,7 @@ It helps Rails applications render:
 - Article structured data for `BlogPosting` and `NewsArticle`
 - Discussion forum post structured data
 - Interaction statistics for public engagement counts
+- Reusable Person structured data
 - Organization and WebSite structured data
 
 ## Requirements
@@ -144,6 +145,7 @@ PageStructuredData includes page types for:
 - [`BlogPosting`](https://schema.org/BlogPosting)
 - [`NewsArticle`](https://schema.org/NewsArticle)
 - [`DiscussionForumPosting`](https://schema.org/DiscussionForumPosting)
+- [`Person`](https://schema.org/Person)
 - [`Organization`](https://schema.org/Organization)
 - [`WebSite`](https://schema.org/WebSite)
 
@@ -277,9 +279,14 @@ PageStructuredData::Page.new(
   page_type: nil,
   page_types: nil,
   canonical_url: nil,
-  fallback_image: nil
+  fallback_image: nil,
+  base_app_name: nil,
+  render_breadcrumb_json_ld: nil
 )
 ```
+
+`base_app_name` overrides `PageStructuredData.base_app_name` for one page. Pass an empty string to suppress the global app name for a specific page.
+`render_breadcrumb_json_ld` can be set to `true` or `false` for one page. Leave it as `nil` to use the global `PageStructuredData.render_default_breadcrumb_json_ld` behavior for generated default breadcrumbs. Explicit breadcrumb objects still render when the global default is disabled unless the page sets `render_breadcrumb_json_ld: false`.
 
 Important methods:
 
@@ -341,7 +348,7 @@ PageStructuredData::PageTypes::NewsArticle.new(
 )
 ```
 
-`authors` should be an array of hashes with `:name` and `:url` keys.
+`authors` can be an array of hashes, `PageStructuredData::PageTypes::Person` objects, or other objects that respond to `to_h`.
 `image` is a convenience option for one image URL. Use `images` when passing multiple image URLs.
 `text` is an alias for `article_body`.
 `interaction_statistics` should be an array of `PageStructuredData::PageTypes::InteractionStatistic` objects or schema-compatible hashes.
@@ -392,6 +399,30 @@ Supported shorthand interaction types are `:like`, `:comment`, and `:share`. Cus
 Important methods:
 
 - `to_h`: returns a structured hash for `InteractionCounter` JSON-LD.
+
+### Person
+
+```ruby
+PageStructuredData::PageTypes::Person.new(
+  name:,
+  url: nil,
+  image: nil,
+  same_as: []
+)
+```
+
+Use `Person` for article authors, organization founders, and other schema.org person values:
+
+```ruby
+author = PageStructuredData::PageTypes::Person.new(
+  name: "Jane Doe",
+  url: "https://example.com/jane"
+)
+```
+
+Important methods:
+
+- `to_h`: returns a compact structured hash for `Person` JSON-LD.
 
 ### Organization Page Type
 

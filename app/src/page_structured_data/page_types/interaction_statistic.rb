@@ -4,6 +4,8 @@ module PageStructuredData
   module PageTypes
     # schema.org InteractionCounter structured data.
     class InteractionStatistic
+      include SchemaNode
+
       ACTION_TYPES = {
         like: 'LikeAction',
         likes: 'LikeAction',
@@ -34,15 +36,12 @@ module PageStructuredData
       end
 
       def to_h
-        node = {
+        compact_node(
           '@type': 'InteractionCounter',
           interactionType: interaction_type_to_h,
           userInteractionCount: user_interaction_count,
-        }
-
-        node[:interactionService] = object_to_h(interaction_service) if interaction_service.present?
-
-        node
+          interactionService: object_to_h(interaction_service)
+        )
       end
 
       private
@@ -53,12 +52,6 @@ module PageStructuredData
         type = ACTION_TYPES.fetch(interaction_type.to_s.to_sym, interaction_type.to_s)
 
         { '@type': type }
-      end
-
-      def object_to_h(object)
-        return object.to_h if object.respond_to?(:to_h)
-
-        object
       end
     end
   end

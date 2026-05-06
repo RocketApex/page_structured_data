@@ -4,11 +4,11 @@ module PageStructuredData
   # Basic page metadata for any page
   class Page
     attr_reader :title, :description, :image, :extra_title, :breadcrumb, :page_type, :page_types, :canonical_url,
-                :fallback_image
+                :fallback_image, :base_app_name, :render_breadcrumb_json_ld
 
     def initialize(title:, description: nil, image: nil, # rubocop:disable Metrics/ParameterLists
                    extra_title: '', breadcrumb: nil, page_type: nil, page_types: nil, canonical_url: nil,
-                   fallback_image: nil)
+                   fallback_image: nil, base_app_name: nil, render_breadcrumb_json_ld: nil)
       @title = title
       @description = description
       @image = image
@@ -18,6 +18,8 @@ module PageStructuredData
       @page_types = page_types
       @canonical_url = canonical_url
       @fallback_image = fallback_image
+      @base_app_name = base_app_name
+      @render_breadcrumb_json_ld = render_breadcrumb_json_ld
     end
 
     def title_with_hierarchies
@@ -28,8 +30,8 @@ module PageStructuredData
 
     def page_title
       result = title_with_hierarchies.join(separator)
-      if base_app_name.present?
-        result += separator + base_app_name
+      if resolved_base_app_name.present?
+        result += separator + resolved_base_app_name
       end
       result
     end
@@ -52,13 +54,22 @@ module PageStructuredData
     end
 
     def breadcrumb_json_ld
+      return if render_breadcrumb_json_ld == false
       return breadcrumb.json_ld(current_page_title: title) if breadcrumb.present?
-      return unless PageStructuredData.render_default_breadcrumb_json_ld
+      return unless render_breadcrumb_json_ld?
 
       Breadcrumbs.new.json_ld(current_page_title: title)
     end
 
-    def base_app_name
+    def render_breadcrumb_json_ld?
+      return render_breadcrumb_json_ld unless render_breadcrumb_json_ld.nil?
+
+      PageStructuredData.render_default_breadcrumb_json_ld
+    end
+
+    def resolved_base_app_name
+      return base_app_name unless base_app_name.nil?
+
       PageStructuredData.base_app_name
     end
 

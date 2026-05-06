@@ -4,6 +4,11 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Add `PageStructuredData::PageTypes::Person` for reusable schema.org person values.
+- Accept richer article author values and omit blank nested schema fields.
+- Add page-level `base_app_name` and `render_breadcrumb_json_ld` options.
+- Omit blank description and image meta tags.
+
 ## 1.0.12 - 2026-05-06
 
 - Add reusable interaction statistics for article-like page types.

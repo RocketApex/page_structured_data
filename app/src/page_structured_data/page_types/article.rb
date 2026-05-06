@@ -4,6 +4,8 @@ module PageStructuredData
   module PageTypes
     # Shared structured data for schema.org article-like page types.
     class Article
+      include SchemaNode
+
       attr_reader :headline, :images, :published_at, :updated_at, :authors, :article_body, :url,
                   :interaction_statistics, :likes_count, :comments_count, :shares_count
 
@@ -30,13 +32,7 @@ module PageStructuredData
           image: images,
           datePublished: published_at,
           dateModified: updated_at,
-          author: authors.map do |author|
-            {
-              '@type': 'Person',
-              name: author[:name],
-              url: author[:url],
-            }
-          end,
+          author: authors.map { |author| author_to_h(author) },
         }
 
         node[:articleBody] = article_body if article_body.present?
@@ -58,6 +54,18 @@ module PageStructuredData
 
       def schema_type
         raise NotImplementedError, "#{self.class.name} must define #schema_type"
+      end
+
+      def author_to_h(author)
+        return object_to_h(author) if author.respond_to?(:to_h) && !author.is_a?(Hash)
+
+        compact_node(
+          '@type': 'Person',
+          name: author[:name] || author['name'],
+          url: author[:url] || author['url'],
+          image: author[:image] || author['image'],
+          sameAs: author[:same_as] || author[:sameAs] || author['same_as'] || author['sameAs']
+        )
       end
 
       def interaction_statistics_to_h
