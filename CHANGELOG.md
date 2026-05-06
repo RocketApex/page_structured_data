@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+## 1.0.3 - 2026-05-06
+
 - Improve RubyGems metadata, documentation links, and public README presentation.
 
 ## 1.0.2 - 2026-05-06
@@ -20,4 +22,3 @@ All notable changes to this project are documented here.
 ## 1.0.0
 
 - Initial public release.
-
