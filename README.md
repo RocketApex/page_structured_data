@@ -14,7 +14,7 @@ It helps Rails applications render:
 - Google-compatible JSON-LD structured data
 - Breadcrumb structured data
 - Article structured data for `BlogPosting` and `NewsArticle`
-- Organization structured data
+- Organization and WebSite structured data
 
 ## Requirements
 
@@ -93,7 +93,9 @@ Set `@page_meta` in the controller or view before the layout renders:
   title: "Home",
   extra_title: "Official Page",
   description: "Welcome to my page",
-  image: image_url("social/home.png")
+  image: image_url("social/home.png"),
+  canonical_url: home_url,
+  fallback_image: image_url("social/default.png")
 )
 ```
 
@@ -133,13 +135,14 @@ This renders `BreadcrumbList` JSON-LD similar to Google's breadcrumb structured 
 
 Current compatibility note: when no breadcrumb object is passed, `PageStructuredData::Page` renders current-page-only breadcrumb JSON-LD by default. To opt out, set `config.render_default_breadcrumb_json_ld = false`.
 
-## Article Page Types
+## Structured Page Types
 
 PageStructuredData includes page types for:
 
 - [`BlogPosting`](https://schema.org/BlogPosting)
 - [`NewsArticle`](https://schema.org/NewsArticle)
 - [`Organization`](https://schema.org/Organization)
+- [`WebSite`](https://schema.org/WebSite)
 
 Use a page type when the current page represents an article:
 
@@ -191,6 +194,30 @@ organization_page_type = PageStructuredData::PageTypes::Organization.new(
 )
 ```
 
+Use `WebSite` with `Organization` when the current page represents a site or homepage:
+
+```ruby
+organization_page_type = PageStructuredData::PageTypes::Organization.new(
+  name: "RocketApex",
+  url: "https://rocketapex.com",
+  logo: "https://rocketapex.com/logo.png"
+)
+
+website_page_type = PageStructuredData::PageTypes::WebSite.new(
+  name: "RocketApex",
+  url: "https://rocketapex.com",
+  description: "Open source projects from RocketApex",
+  publisher: organization_page_type
+)
+
+@page_meta = PageStructuredData::Page.new(
+  title: "RocketApex",
+  description: "Open source projects from RocketApex",
+  canonical_url: "https://rocketapex.com",
+  page_types: [organization_page_type, website_page_type]
+)
+```
+
 ## API Reference
 
 ### `PageStructuredData::Page`
@@ -202,7 +229,10 @@ PageStructuredData::Page.new(
   image: nil,
   extra_title: "",
   breadcrumb: nil,
-  page_type: nil
+  page_type: nil,
+  page_types: nil,
+  canonical_url: nil,
+  fallback_image: nil
 )
 ```
 
@@ -210,6 +240,7 @@ Important methods:
 
 - `page_title`: returns the composed page title.
 - `json_lds`: returns the JSON-LD script tags for breadcrumbs and page type data.
+- `resolved_image`: returns `image` or `fallback_image`.
 
 ### `PageStructuredData::Breadcrumbs`
 
@@ -274,6 +305,25 @@ Important methods:
 
 - `to_h`: returns a structured hash for organization JSON-LD.
 - `json_ld`: returns an organization JSON-LD script tag.
+
+### WebSite Page Type
+
+```ruby
+PageStructuredData::PageTypes::WebSite.new(
+  name:,
+  url:,
+  description: nil,
+  publisher: nil,
+  potential_action: nil
+)
+```
+
+`publisher` can be a hash or another page type that responds to `to_h`, such as `PageStructuredData::PageTypes::Organization`.
+
+Important methods:
+
+- `to_h`: returns a structured hash for WebSite JSON-LD.
+- `json_ld`: returns a WebSite JSON-LD script tag.
 
 ## Development
 

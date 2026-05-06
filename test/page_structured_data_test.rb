@@ -223,6 +223,51 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     )
   end
 
+  test "website renders schema" do
+    organization = PageStructuredData::PageTypes::Organization.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com"
+    )
+    page_type = PageStructuredData::PageTypes::WebSite.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com",
+      description: "Open source projects from RocketApex",
+      publisher: organization,
+      potential_action: {
+        '@type': 'SearchAction',
+        target: "https://rocketapex.com/search?q={search_term_string}",
+        'query-input': "required name=search_term_string"
+      }
+    )
+
+    json_ld = parse_json_ld(page_type.json_ld)
+
+    assert_equal "https://schema.org", json_ld["@context"]
+    assert_equal "WebSite", json_ld["@type"]
+    assert_equal "RocketApex", json_ld["name"]
+    assert_equal "https://rocketapex.com", json_ld["url"]
+    assert_equal "Open source projects from RocketApex", json_ld["description"]
+    assert_equal "Organization", json_ld["publisher"]["@type"]
+    assert_equal "SearchAction", json_ld["potentialAction"]["@type"]
+  end
+
+  test "website exposes schema hash" do
+    page_type = PageStructuredData::PageTypes::WebSite.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com"
+    )
+
+    assert_equal(
+      {
+        "@context" => "https://schema.org",
+        "@type" => "WebSite",
+        "name" => "RocketApex",
+        "url" => "https://rocketapex.com"
+      },
+      page_type.to_h.deep_stringify_keys
+    )
+  end
+
   test "page renders organization page type json ld" do
     PageStructuredData.render_default_breadcrumb_json_ld = false
     page_type = PageStructuredData::PageTypes::Organization.new(
@@ -235,6 +280,27 @@ class PageStructuredDataTest < ActiveSupport::TestCase
 
     assert_equal "Organization", json_ld["@type"]
     assert_equal "RocketApex", json_ld["name"]
+  end
+
+  test "page renders multiple page types" do
+    PageStructuredData.render_default_breadcrumb_json_ld = false
+    organization = PageStructuredData::PageTypes::Organization.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com"
+    )
+    website = PageStructuredData::PageTypes::WebSite.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com",
+      publisher: organization
+    )
+    page = PageStructuredData::Page.new(
+      title: "Home",
+      page_types: [organization, website]
+    )
+
+    json_lds = parse_json_lds(page.json_lds)
+
+    assert_equal ["Organization", "WebSite"], json_lds.map { |json_ld| json_ld["@type"] }
   end
 
   test "page renders breadcrumbs before page type json ld" do

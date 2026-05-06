@@ -6,6 +6,7 @@ require_relative "../app/src/page_structured_data/page_types/article"
 require_relative "../app/src/page_structured_data/page_types/blog_posting"
 require_relative "../app/src/page_structured_data/page_types/news_article"
 require_relative "../app/src/page_structured_data/page_types/organization"
+require_relative "../app/src/page_structured_data/page_types/web_site"
 require_relative "../app/src/page_structured_data/page"
 
 module PageStructuredData

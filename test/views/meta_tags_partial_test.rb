@@ -34,6 +34,31 @@ class MetaTagsPartialTest < ActionView::TestCase
     assert_select 'meta[property="twitter:image"][content="https://example.com/default.png"]'
   end
 
+  test "uses page fallback image before default image local" do
+    page = PageStructuredData::Page.new(
+      title: "Home",
+      fallback_image: "https://example.com/fallback.png"
+    )
+
+    render partial: "page_structured_data/meta_tags",
+           locals: { page: page, default_image_url: "https://example.com/default.png" }
+
+    assert_select 'meta[name="image"][content="https://example.com/fallback.png"]'
+    assert_select 'meta[property="og:image"][content="https://example.com/fallback.png"]'
+    assert_select 'meta[property="twitter:image"][content="https://example.com/fallback.png"]'
+  end
+
+  test "renders canonical url" do
+    page = PageStructuredData::Page.new(
+      title: "Home",
+      canonical_url: "https://example.com/home"
+    )
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_select 'link[rel="canonical"][href="https://example.com/home"]'
+  end
+
   test "renders json ld scripts" do
     page_type = PageStructuredData::PageTypes::NewsArticle.new(
       headline: "Launch Notes",
