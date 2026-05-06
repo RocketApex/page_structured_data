@@ -51,7 +51,7 @@ release_section = "\n## #{version} - #{Date.today}\n\n#{unreleased_body}\n"
 changelog = changelog.sub(unreleased_match[0], "#{unreleased_match[:prefix]}#{release_section}")
 File.write(CHANGELOG_FILE, changelog)
 
-run("bundle install")
+run("bundle check || bundle install")
 run("bundle exec rake test")
 run("bundle exec ruby -Ilib -e 'require \"page_structured_data\"; abort PageStructuredData::VERSION unless PageStructuredData::VERSION == \"#{version}\"'")
 run("gem build page_structured_data.gemspec")
