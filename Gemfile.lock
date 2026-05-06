@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    page_structured_data (1.0.12)
+    page_structured_data (1.0.13)
       rails (>= 7.0.0, < 9.0)
 
 GEM
