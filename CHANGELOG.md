@@ -16,6 +16,8 @@ All notable changes to this project are documented here.
 - Add GitHub Actions CI for tests, require verification, and gem build verification.
 - Constrain the Rails dependency to Rails 7.x, matching the tested support baseline.
 - Add `render_default_breadcrumb_json_ld` config to opt out of current-page-only breadcrumb JSON-LD.
+- Add CI coverage for Rails 7.0, 7.1, 7.2, 8.0, and 8.1.
+- Widen the Rails dependency to support Rails 7.x and 8.x.
 
 ## 1.0.4 - 2026-05-06
 

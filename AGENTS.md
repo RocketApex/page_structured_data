@@ -24,11 +24,11 @@ Because this is a public gem and repository, changes should be polished before r
 - `BlogPosting` and `NewsArticle` share article behavior through `PageStructuredData::PageTypes::Article`.
 - JSON-LD methods currently return full `<script>` HTML strings, and the ERB partial marks the combined output as `html_safe`. A future safer API could expose hashes while keeping `json_ld` backward compatible.
 - The gemspec requires Ruby `>= 2.7.0`, matching the Rails 7 baseline.
-- The gemspec supports Rails 7.x. Widen Rails support only after adding CI coverage for the new Rails major/minor.
+- The gemspec supports Rails 7.x and Rails 8.x. Keep CI coverage aligned before widening support further.
 
 ## Things To Do
 
-1. Expand CI to a broader Rails/Ruby matrix before widening Rails support beyond Rails 7.x.
+1. Expand CI before widening Rails support beyond the currently tested Rails versions.
 2. Trim unused generated Rails engine files only if doing so does not affect packaged files or downstream apps.
 
 ## Verification Commands

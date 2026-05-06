@@ -17,10 +17,10 @@ It helps Rails applications render:
 
 ## Requirements
 
-- Rails 7.x
+- Rails 7.x or 8.x
 - Ruby 2.7 or newer
 
-Rails 7.0 requires Ruby 2.7 or newer, so this gem follows that same baseline. Rails 8 is not declared as supported yet; add CI coverage before widening the Rails dependency.
+Rails 7.0 requires Ruby 2.7 or newer, so this gem follows that same baseline. Rails 8 requires Ruby 3.2 or newer, so Rails 8 applications must use a Ruby version supported by Rails 8.
 
 ## Installation
 
