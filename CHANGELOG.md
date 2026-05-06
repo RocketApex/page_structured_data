@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Update gem metadata to mention Organization and WebSite JSON-LD support.
+
 ## 1.0.11 - 2026-05-06
 
 - Add optional `description` and `founder` support to organization page types.
