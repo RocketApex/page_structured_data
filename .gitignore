@@ -14,3 +14,6 @@
 
 # Gems being built
 /*.gem
+
+# Matrix Gemfiles should resolve per CI Ruby/Rails job
+/gemfiles/*.lock
