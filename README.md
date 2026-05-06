@@ -288,6 +288,8 @@ Verify the gem can be required:
 ruby -Ilib -e 'require "page_structured_data"; puts PageStructuredData::VERSION'
 ```
 
+Release instructions are documented in [docs/release.md](docs/release.md).
+
 ## Compatibility Policy
 
 This gem is used in production applications. Changes should preserve existing public APIs and rendered output unless a breaking change is intentionally released in a major version.

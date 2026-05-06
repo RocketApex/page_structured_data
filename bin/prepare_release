@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "date"
+require "open3"
+
+ROOT = File.expand_path("..", __dir__)
+VERSION_FILE = File.join(ROOT, "lib/page_structured_data/version.rb")
+CHANGELOG_FILE = File.join(ROOT, "CHANGELOG.md")
+
+def abort_with(message)
+  warn message
+  exit 1
+end
+
+def run(command, env = {})
+  puts "$ #{command}"
+  system(env, command, chdir: ROOT) || abort_with("Command failed: #{command}")
+end
+
+def capture(command)
+  stdout, status = Open3.capture2(command, chdir: ROOT)
+  abort_with("Command failed: #{command}") unless status.success?
+
+  stdout
+end
+
+version = ARGV.fetch(0) do
+  abort_with("Usage: bin/prepare_release VERSION\nExample: bin/prepare_release 1.0.9")
+end
+
+abort_with("Version must look like 1.2.3") unless version.match?(/\A\d+\.\d+\.\d+\z/)
+
+status = capture("git status --short")
+abort_with("Working tree must be clean before preparing a release.") unless status.empty?
+
+version_contents = File.read(VERSION_FILE)
+unless version_contents.sub!(/VERSION = "[^"]+"/, %(VERSION = "#{version}"))
+  abort_with("Could not update #{VERSION_FILE}")
+end
+File.write(VERSION_FILE, version_contents)
+
+changelog = File.read(CHANGELOG_FILE)
+unreleased_match = changelog.match(/\A(?<prefix>.*?## Unreleased\n)(?<body>.*?)(?=\n## \d+\.\d+\.\d+|\z)/m)
+abort_with("Could not find an Unreleased section in CHANGELOG.md") unless unreleased_match
+
+unreleased_body = unreleased_match[:body].strip
+abort_with("CHANGELOG.md has no Unreleased entries.") if unreleased_body.empty?
+
+release_section = "\n## #{version} - #{Date.today}\n\n#{unreleased_body}\n"
+changelog = changelog.sub(unreleased_match[0], "#{unreleased_match[:prefix]}#{release_section}")
+File.write(CHANGELOG_FILE, changelog)
+
+run("bundle install")
+run("bundle exec rake test")
+run("bundle exec ruby -Ilib -e 'require \"page_structured_data\"; abort PageStructuredData::VERSION unless PageStructuredData::VERSION == \"#{version}\"'")
+run("gem build page_structured_data.gemspec")
+
+puts
+puts "Prepared page_structured_data #{version}."
+puts
+puts "Next manual steps:"
+puts "  gem push page_structured_data-#{version}.gem --otp YOUR_OTP"
+puts "  git add CHANGELOG.md Gemfile.lock lib/page_structured_data/version.rb"
+puts "  git commit -m \"Release #{version}\""
+puts "  git tag v#{version}"
+puts "  git push origin main --tags"
