@@ -47,7 +47,7 @@ jobs:
         run: bundle exec rake test
 
       - name: Verify require
-        run: ruby -Ilib -e 'require "page_structured_data"; puts PageStructuredData::VERSION'
+        run: bundle exec ruby -Ilib -e 'require "page_structured_data"; puts PageStructuredData::VERSION'
 
       - name: Build gem
         run: gem build page_structured_data.gemspec
