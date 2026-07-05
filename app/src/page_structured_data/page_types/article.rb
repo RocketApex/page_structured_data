@@ -6,18 +6,28 @@ module PageStructuredData
     class Article
       include SchemaNode
 
-      attr_reader :headline, :images, :published_at, :updated_at, :authors, :article_body, :url,
+      attr_reader :headline, :images, :published_at, :updated_at, :authors, :description, :article_body, :url,
+                  :main_entity_of_page, :publisher, :article_section, :keywords, :word_count, :in_language,
                   :interaction_statistics, :likes_count, :comments_count, :shares_count
 
       def initialize(headline:, published_at:, updated_at:, images: [], authors: [], image: nil, article_body: nil, text: nil,
-                     url: nil, interaction_statistics: [], likes_count: nil, comments_count: nil, shares_count: nil)
+                     description: nil, url: nil, main_entity_of_page: nil, publisher: nil, article_section: nil,
+                     keywords: nil, word_count: nil, in_language: nil, interaction_statistics: [], likes_count: nil,
+                     comments_count: nil, shares_count: nil)
         @headline = headline
         @images = image.present? ? Array(image) : Array(images)
         @published_at = published_at
         @updated_at = updated_at
         @authors = Array(authors)
+        @description = description
         @article_body = article_body || text
         @url = url
+        @main_entity_of_page = main_entity_of_page
+        @publisher = publisher
+        @article_section = article_section
+        @keywords = keywords
+        @word_count = word_count
+        @in_language = in_language
         @interaction_statistics = Array(interaction_statistics)
         @likes_count = likes_count
         @comments_count = comments_count
@@ -35,8 +45,15 @@ module PageStructuredData
           author: authors.map { |author| author_to_h(author) },
         }
 
+        node[:description] = description if description.present?
         node[:articleBody] = article_body if article_body.present?
         node[:url] = url if url.present?
+        node[:mainEntityOfPage] = object_to_h(main_entity_of_page) if main_entity_of_page.present?
+        node[:publisher] = object_to_h(publisher) if publisher.present?
+        node[:articleSection] = article_section if article_section.present?
+        node[:keywords] = keywords if keywords.present?
+        node[:wordCount] = word_count if word_count.present?
+        node[:inLanguage] = object_to_h(in_language) if in_language.present?
         node[:interactionStatistic] = interaction_statistics_to_h if interaction_statistics_to_h.any?
 
         node
@@ -55,7 +72,7 @@ module PageStructuredData
           headline: headline,
           published_at: published_at,
           updated_at: updated_at
-        ) + author_warnings + interaction_statistic_warnings
+        ) + author_warnings + publisher_warnings + interaction_statistic_warnings
       end
 
       private
@@ -87,6 +104,12 @@ module PageStructuredData
             end
           end
         end
+      end
+
+      def publisher_warnings
+        return [] unless publisher.respond_to?(:warnings)
+
+        publisher.warnings.map { |warning| "publisher: #{warning}" }
       end
 
       def interaction_statistics_to_h

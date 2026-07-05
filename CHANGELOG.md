@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Add richer optional schema fields for article-like page types.
 - Add README common pattern examples.
 - Add focused rendered metadata output coverage.
 - Add soft validation helpers with `warnings` and `valid?`.

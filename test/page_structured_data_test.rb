@@ -225,6 +225,18 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     refute page_type.valid?
   end
 
+  test "blog posting exposes publisher warnings" do
+    page_type = PageStructuredData::PageTypes::BlogPosting.new(
+      headline: "Launch Notes",
+      published_at: Time.zone.parse("2026-05-01 10:00:00 UTC"),
+      updated_at: Time.zone.parse("2026-05-02 10:00:00 UTC"),
+      publisher: PageStructuredData::PageTypes::Organization.new(name: nil, url: nil)
+    )
+
+    assert_equal ["publisher: name is required", "publisher: url is required"], page_type.warnings
+    refute page_type.valid?
+  end
+
   test "blog posting exposes schema hash" do
     page_type = PageStructuredData::PageTypes::BlogPosting.new(
       headline: "Launch Notes",
@@ -241,6 +253,42 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "Launch Notes", schema["headline"]
     assert_equal ["https://example.com/cover.png"], schema["image"]
     assert_equal [{ "@type" => "Person", "name" => "Jane Doe", "url" => "https://example.com/jane" }], schema["author"]
+  end
+
+  test "blog posting renders optional article schema fields" do
+    publisher = PageStructuredData::PageTypes::Organization.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com"
+    )
+    page_type = PageStructuredData::PageTypes::BlogPosting.new(
+      headline: "Launch Notes",
+      description: "Release notes for the latest launch",
+      article_body: "Full article body",
+      url: "https://example.com/articles/launch-notes",
+      main_entity_of_page: "https://example.com/articles/launch-notes",
+      publisher: publisher,
+      article_section: "Engineering",
+      keywords: ["rails", "seo", "structured data"],
+      word_count: 640,
+      in_language: "en",
+      published_at: Time.zone.parse("2026-05-01 10:00:00 UTC"),
+      updated_at: Time.zone.parse("2026-05-02 10:00:00 UTC")
+    )
+
+    json_ld = parse_json_ld(page_type.json_ld)
+
+    assert_equal "Release notes for the latest launch", json_ld["description"]
+    assert_equal "Full article body", json_ld["articleBody"]
+    assert_equal "https://example.com/articles/launch-notes", json_ld["url"]
+    assert_equal "https://example.com/articles/launch-notes", json_ld["mainEntityOfPage"]
+    assert_equal(
+      { "@context" => "https://schema.org", "@type" => "Organization", "name" => "RocketApex", "url" => "https://rocketapex.com" },
+      json_ld["publisher"]
+    )
+    assert_equal "Engineering", json_ld["articleSection"]
+    assert_equal ["rails", "seo", "structured data"], json_ld["keywords"]
+    assert_equal 640, json_ld["wordCount"]
+    assert_equal "en", json_ld["inLanguage"]
   end
 
   test "blog posting renders interaction statistics from convenience counts" do

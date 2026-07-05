@@ -274,6 +274,11 @@ website_page_type = PageStructuredData::PageTypes::WebSite.new(
 Use `BlogPosting` or `NewsArticle` when a page represents editorial content:
 
 ```ruby
+publisher = PageStructuredData::PageTypes::Organization.new(
+  name: "Example",
+  url: root_url
+)
+
 author = PageStructuredData::PageTypes::Person.new(
   name: @article.author.name,
   url: author_url(@article.author)
@@ -281,8 +286,15 @@ author = PageStructuredData::PageTypes::Person.new(
 
 article_page_type = PageStructuredData::PageTypes::BlogPosting.new(
   headline: @article.title,
+  description: @article.summary,
   article_body: @article.body.to_plain_text,
   url: article_url(@article),
+  main_entity_of_page: article_url(@article),
+  publisher: publisher,
+  article_section: @article.category.name,
+  keywords: @article.tags.pluck(:name),
+  word_count: @article.word_count,
+  in_language: "en",
   published_at: @article.published_at,
   updated_at: @article.updated_at,
   authors: [author],
@@ -484,9 +496,16 @@ PageStructuredData::PageTypes::BlogPosting.new(
   images: [],
   authors: [],
   image: nil,
+  description: nil,
   article_body: nil,
   text: nil,
   url: nil,
+  main_entity_of_page: nil,
+  publisher: nil,
+  article_section: nil,
+  keywords: nil,
+  word_count: nil,
+  in_language: nil,
   interaction_statistics: [],
   likes_count: nil,
   comments_count: nil,
@@ -502,9 +521,16 @@ PageStructuredData::PageTypes::NewsArticle.new(
   images: [],
   authors: [],
   image: nil,
+  description: nil,
   article_body: nil,
   text: nil,
   url: nil,
+  main_entity_of_page: nil,
+  publisher: nil,
+  article_section: nil,
+  keywords: nil,
+  word_count: nil,
+  in_language: nil,
   interaction_statistics: [],
   likes_count: nil,
   comments_count: nil,
@@ -515,6 +541,9 @@ PageStructuredData::PageTypes::NewsArticle.new(
 `authors` can be an array of hashes, `PageStructuredData::PageTypes::Person` objects, or other objects that respond to `to_h`.
 `image` is a convenience option for one image URL. Use `images` when passing multiple image URLs.
 `text` is an alias for `article_body`.
+`main_entity_of_page` can be a URL, hash, or object that responds to `to_h`.
+`publisher` can be a hash or another page type that responds to `to_h`, such as `PageStructuredData::PageTypes::Organization`.
+`keywords` can be a string or an array.
 `interaction_statistics` should be an array of `PageStructuredData::PageTypes::InteractionStatistic` objects or schema-compatible hashes.
 
 Important methods:
@@ -530,9 +559,16 @@ PageStructuredData::PageTypes::DiscussionForumPosting.new(
   images: [],
   authors: [],
   image: nil,
+  description: nil,
   article_body: nil,
   text: nil,
   url: nil,
+  main_entity_of_page: nil,
+  publisher: nil,
+  article_section: nil,
+  keywords: nil,
+  word_count: nil,
+  in_language: nil,
   interaction_statistics: [],
   likes_count: nil,
   comments_count: nil,
