@@ -44,6 +44,13 @@ module PageStructuredData
         )
       end
 
+      def warnings
+        required_attribute_warnings(
+          interaction_type: interaction_type,
+          user_interaction_count: user_interaction_count
+        )
+      end
+
       private
 
       def interaction_type_to_h

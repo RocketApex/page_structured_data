@@ -36,6 +36,17 @@ module PageStructuredData
         )
       end
 
+      def warnings
+        required_attribute_warnings(name: name, url: url) + nested_warnings
+      end
+
+      private
+
+      def nested_warnings
+        return [] unless publisher.respond_to?(:warnings)
+
+        publisher.warnings.map { |warning| "publisher: #{warning}" }
+      end
     end
   end
 end

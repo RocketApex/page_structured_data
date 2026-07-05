@@ -50,6 +50,14 @@ module PageStructuredData
         )
       end
 
+      def warnings
+        required_attribute_warnings(
+          headline: headline,
+          published_at: published_at,
+          updated_at: updated_at
+        ) + author_warnings + interaction_statistic_warnings
+      end
+
       private
 
       def schema_type
@@ -66,6 +74,19 @@ module PageStructuredData
           image: author[:image] || author['image'],
           sameAs: author[:same_as] || author[:sameAs] || author['same_as'] || author['sameAs']
         )
+      end
+
+      def author_warnings
+        authors.each_with_index.flat_map do |author, index|
+          if author.respond_to?(:warnings)
+            author.warnings.map { |warning| "author #{index + 1}: #{warning}" }
+          else
+            author_hash = object_to_h(author) || {}
+            required_attribute_warnings(name: author_hash[:name] || author_hash['name']).map do |warning|
+              "author #{index + 1}: #{warning}"
+            end
+          end
+        end
       end
 
       def interaction_statistics_to_h
@@ -94,6 +115,14 @@ module PageStructuredData
         return if count.nil?
 
         InteractionStatistic.new(interaction_type: interaction_type, user_interaction_count: count)
+      end
+
+      def interaction_statistic_warnings
+        all_interaction_statistics.each_with_index.flat_map do |interaction_statistic, index|
+          next [] unless interaction_statistic.respond_to?(:warnings)
+
+          interaction_statistic.warnings.map { |warning| "interaction statistic #{index + 1}: #{warning}" }
+        end
       end
     end
   end

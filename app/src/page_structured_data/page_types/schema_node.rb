@@ -4,6 +4,14 @@ module PageStructuredData
   module PageTypes
     # Shared helpers for schema.org hash values.
     module SchemaNode
+      def warnings
+        []
+      end
+
+      def valid?
+        warnings.empty?
+      end
+
       private
 
       def compact_node(node)
@@ -22,6 +30,12 @@ module PageStructuredData
 
       def blank_schema_value?(value)
         value.nil? || (value.respond_to?(:empty?) && value.empty?)
+      end
+
+      def required_attribute_warnings(attributes)
+        attributes.each_with_object([]) do |(name, value), warnings|
+          warnings << "#{name} is required" if blank_schema_value?(value)
+        end
       end
     end
   end

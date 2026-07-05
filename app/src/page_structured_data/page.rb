@@ -47,10 +47,30 @@ module PageStructuredData
       image || fallback_image
     end
 
+    def warnings
+      page_warnings + page_type_warnings
+    end
+
+    def valid?
+      warnings.empty?
+    end
+
     private
 
     def resolved_page_types
       Array.wrap(page_types.presence || page_type).compact
+    end
+
+    def page_warnings
+      title.present? ? [] : ['title is required']
+    end
+
+    def page_type_warnings
+      resolved_page_types.each_with_index.flat_map do |resolved_page_type, index|
+        next [] unless resolved_page_type.respond_to?(:warnings)
+
+        resolved_page_type.warnings.map { |warning| "page type #{index + 1}: #{warning}" }
+      end
     end
 
     def breadcrumb_json_ld

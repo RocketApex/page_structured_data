@@ -295,6 +295,27 @@ Important methods:
 - `page_title`: returns the composed page title.
 - `json_lds`: returns the JSON-LD script tags for breadcrumbs and page type data.
 - `resolved_image`: returns `image` or `fallback_image`.
+- `warnings`: returns soft validation warnings for the page and page types.
+- `valid?`: returns `true` when `warnings` is empty.
+
+### Soft Validation
+
+Page objects and page type objects expose non-blocking validation helpers:
+
+```ruby
+page_type = PageStructuredData::PageTypes::Organization.new(
+  name: nil,
+  url: nil
+)
+
+page_type.warnings
+# => ["name is required", "url is required"]
+
+page_type.valid?
+# => false
+```
+
+`warnings` does not stop rendering. It is intended for tests, previews, and development checks where you want to catch incomplete structured data before publishing a page.
 
 ### `PageStructuredData::Breadcrumbs`
 

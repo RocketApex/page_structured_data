@@ -24,6 +24,10 @@ module PageStructuredData
           sameAs: same_as
         )
       end
+
+      def warnings
+        required_attribute_warnings(name: name)
+      end
     end
   end
 end

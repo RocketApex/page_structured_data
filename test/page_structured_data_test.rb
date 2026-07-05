@@ -201,6 +201,30 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     )
   end
 
+  test "blog posting exposes warnings for missing required fields and author names" do
+    page_type = PageStructuredData::PageTypes::BlogPosting.new(
+      headline: nil,
+      published_at: nil,
+      updated_at: nil,
+      authors: [
+        { url: "https://example.com/author-without-name" },
+        PageStructuredData::PageTypes::Person.new(name: nil)
+      ]
+    )
+
+    assert_equal(
+      [
+        "headline is required",
+        "published_at is required",
+        "updated_at is required",
+        "author 1: name is required",
+        "author 2: name is required"
+      ],
+      page_type.warnings
+    )
+    refute page_type.valid?
+  end
+
   test "blog posting exposes schema hash" do
     page_type = PageStructuredData::PageTypes::BlogPosting.new(
       headline: "Launch Notes",
@@ -320,6 +344,16 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     )
   end
 
+  test "interaction statistic exposes warnings" do
+    interaction_statistic = PageStructuredData::PageTypes::InteractionStatistic.new(
+      interaction_type: nil,
+      user_interaction_count: nil
+    )
+
+    assert_equal ["interaction_type is required", "user_interaction_count is required"], interaction_statistic.warnings
+    refute interaction_statistic.valid?
+  end
+
   test "person exposes compact schema hash" do
     person = PageStructuredData::PageTypes::Person.new(
       name: "Jane Doe",
@@ -334,6 +368,13 @@ class PageStructuredDataTest < ActiveSupport::TestCase
       },
       person.to_h.deep_stringify_keys
     )
+  end
+
+  test "person exposes warnings" do
+    person = PageStructuredData::PageTypes::Person.new(name: nil)
+
+    assert_equal ["name is required"], person.warnings
+    refute person.valid?
   end
 
   test "discussion forum posting renders article-like schema" do
@@ -443,6 +484,20 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     )
   end
 
+  test "organization exposes warnings" do
+    page_type = PageStructuredData::PageTypes::Organization.new(
+      name: nil,
+      url: nil,
+      founder: PageStructuredData::PageTypes::Person.new(name: nil)
+    )
+
+    assert_equal(
+      ["name is required", "url is required", "founder: name is required"],
+      page_type.warnings
+    )
+    refute page_type.valid?
+  end
+
   test "website renders schema" do
     organization = PageStructuredData::PageTypes::Organization.new(
       name: "RocketApex",
@@ -488,6 +543,20 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     )
   end
 
+  test "website exposes warnings" do
+    page_type = PageStructuredData::PageTypes::WebSite.new(
+      name: nil,
+      url: nil,
+      publisher: PageStructuredData::PageTypes::Organization.new(name: nil, url: nil)
+    )
+
+    assert_equal(
+      ["name is required", "url is required", "publisher: name is required", "publisher: url is required"],
+      page_type.warnings
+    )
+    refute page_type.valid?
+  end
+
   test "page renders organization page type json ld" do
     PageStructuredData.render_default_breadcrumb_json_ld = false
     page_type = PageStructuredData::PageTypes::Organization.new(
@@ -521,6 +590,28 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     json_lds = parse_json_lds(page.json_lds)
 
     assert_equal ["Organization", "WebSite"], json_lds.map { |json_ld| json_ld["@type"] }
+  end
+
+  test "page aggregates warnings from page types" do
+    page_type = PageStructuredData::PageTypes::Organization.new(name: nil, url: nil)
+    page = PageStructuredData::Page.new(title: nil, page_type: page_type)
+
+    assert_equal(
+      ["title is required", "page type 1: name is required", "page type 1: url is required"],
+      page.warnings
+    )
+    refute page.valid?
+  end
+
+  test "page is valid when page and page types have no warnings" do
+    page_type = PageStructuredData::PageTypes::Organization.new(
+      name: "RocketApex",
+      url: "https://rocketapex.com"
+    )
+    page = PageStructuredData::Page.new(title: "About", page_type: page_type)
+
+    assert_empty page.warnings
+    assert page.valid?
   end
 
   test "page renders breadcrumbs before page type json ld" do

@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Add soft validation helpers with `warnings` and `valid?`.
 - Improve README and gem metadata positioning.
 
 ## 1.0.13 - 2026-05-06

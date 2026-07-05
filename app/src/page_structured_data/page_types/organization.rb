@@ -40,7 +40,20 @@ module PageStructuredData
         )
       end
 
+      def warnings
+        required_attribute_warnings(name: name, url: url) + nested_warnings
+      end
+
       private
+
+      def nested_warnings
+        [founder, parent_organization].each_with_index.flat_map do |node, index|
+          next [] unless node.respond_to?(:warnings)
+
+          prefix = index.zero? ? 'founder' : 'parent organization'
+          node.warnings.map { |warning| "#{prefix}: #{warning}" }
+        end
+      end
 
       def parent_organization_to_h
         return object_to_h(parent_organization) if parent_organization.respond_to?(:to_h) && !parent_organization.is_a?(Hash)
