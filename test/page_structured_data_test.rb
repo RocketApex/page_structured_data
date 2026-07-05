@@ -49,6 +49,12 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "Home", page.page_title
   end
 
+  test "page exposes robots content" do
+    page = PageStructuredData::Page.new(title: "Archive", robots: ["noindex", "follow"])
+
+    assert_equal "noindex,follow", page.robots_content
+  end
+
   test "pages include default breadcrumb json ld" do
     page = PageStructuredData::Page.new(title: "Home")
 

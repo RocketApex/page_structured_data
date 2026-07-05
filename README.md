@@ -100,7 +100,8 @@ Set `@page_meta` in the controller or view before the layout renders:
   description: "Welcome to my page",
   image: image_url("social/home.png"),
   canonical_url: home_url,
-  fallback_image: image_url("social/default.png")
+  fallback_image: image_url("social/default.png"),
+  robots: "index,follow"
 )
 ```
 
@@ -420,6 +421,29 @@ PageStructuredData::Page.new(
 )
 ```
 
+### Paginated Archive
+
+Use `robots` for archive, search, filtered, or paginated pages that should be crawlable but not indexed:
+
+```ruby
+@page_meta = PageStructuredData::Page.new(
+  title: "Articles",
+  extra_title: "Page #{@pagy.page}",
+  description: "Browse articles from Example",
+  canonical_url: articles_url(page: @pagy.page),
+  robots: "noindex,follow"
+)
+```
+
+`robots` can also be passed as an array:
+
+```ruby
+PageStructuredData::Page.new(
+  title: "Articles",
+  robots: ["noindex", "follow"]
+)
+```
+
 ## API Reference
 
 ### `PageStructuredData::Page`
@@ -436,18 +460,21 @@ PageStructuredData::Page.new(
   canonical_url: nil,
   fallback_image: nil,
   base_app_name: nil,
-  render_breadcrumb_json_ld: nil
+  render_breadcrumb_json_ld: nil,
+  robots: nil
 )
 ```
 
 `base_app_name` overrides `PageStructuredData.base_app_name` for one page. Pass an empty string to suppress the global app name for a specific page.
 `render_breadcrumb_json_ld` can be set to `true` or `false` for one page. Leave it as `nil` to use the global `PageStructuredData.render_default_breadcrumb_json_ld` behavior for generated default breadcrumbs. Explicit breadcrumb objects still render when the global default is disabled unless the page sets `render_breadcrumb_json_ld: false`.
+`robots` can be a string or array and renders a `<meta name="robots">` tag when present.
 
 Important methods:
 
 - `page_title`: returns the composed page title.
 - `json_lds`: returns the JSON-LD script tags for breadcrumbs and page type data.
 - `resolved_image`: returns `image` or `fallback_image`.
+- `robots_content`: returns the rendered robots directives.
 - `warnings`: returns soft validation warnings for the page and page types.
 - `valid?`: returns `true` when `warnings` is empty.
 

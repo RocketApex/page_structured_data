@@ -4,10 +4,14 @@
 <% description = page&.description %>
 <% image = page&.resolved_image || default_image_url || nil %>
 <% canonical_url = page&.canonical_url %>
+<% robots_content = page&.robots_content %>
 
 <title><%= title %></title>
 <% if canonical_url.present? %>
 <link rel="canonical" href="<%= canonical_url %>">
+<% end %>
+<% if robots_content.present? %>
+<meta name="robots" content="<%= robots_content %>">
 <% end %>
 
 <meta name="title" content="<%= title %>">

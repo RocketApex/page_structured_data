@@ -85,6 +85,28 @@ class MetaTagsPartialTest < ActionView::TestCase
     assert_select 'link[rel="canonical"][href="https://example.com/home"]'
   end
 
+  test "renders robots meta tag from string" do
+    page = PageStructuredData::Page.new(
+      title: "Archive",
+      robots: "noindex,follow"
+    )
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_select 'meta[name="robots"][content="noindex,follow"]'
+  end
+
+  test "renders robots meta tag from array" do
+    page = PageStructuredData::Page.new(
+      title: "Archive",
+      robots: ["noindex", "follow"]
+    )
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_select 'meta[name="robots"][content="noindex,follow"]'
+  end
+
   test "renders json ld scripts" do
     page_type = PageStructuredData::PageTypes::NewsArticle.new(
       headline: "Launch Notes",
