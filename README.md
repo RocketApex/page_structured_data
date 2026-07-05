@@ -267,6 +267,147 @@ website_page_type = PageStructuredData::PageTypes::WebSite.new(
 )
 ```
 
+## Common Patterns
+
+### Article Page
+
+Use `BlogPosting` or `NewsArticle` when a page represents editorial content:
+
+```ruby
+author = PageStructuredData::PageTypes::Person.new(
+  name: @article.author.name,
+  url: author_url(@article.author)
+)
+
+article_page_type = PageStructuredData::PageTypes::BlogPosting.new(
+  headline: @article.title,
+  article_body: @article.body.to_plain_text,
+  url: article_url(@article),
+  published_at: @article.published_at,
+  updated_at: @article.updated_at,
+  authors: [author],
+  image: url_for(@article.cover_image),
+  likes_count: @article.likes_count
+)
+
+@page_meta = PageStructuredData::Page.new(
+  title: @article.title,
+  description: @article.summary,
+  image: url_for(@article.cover_image),
+  canonical_url: article_url(@article),
+  breadcrumb: article_breadcrumbs,
+  page_type: article_page_type
+)
+```
+
+### Homepage
+
+Use both `Organization` and `WebSite` when the page represents the public home of a site or organization:
+
+```ruby
+founder = PageStructuredData::PageTypes::Person.new(
+  name: "Jane Doe",
+  url: "https://example.com/jane"
+)
+
+organization = PageStructuredData::PageTypes::Organization.new(
+  name: "Example",
+  url: root_url,
+  description: "Useful software from Example",
+  logo: image_url("logo.png"),
+  same_as: ["https://github.com/example"],
+  founder: founder
+)
+
+website = PageStructuredData::PageTypes::WebSite.new(
+  name: "Example",
+  url: root_url,
+  description: "Useful software from Example",
+  publisher: organization
+)
+
+@page_meta = PageStructuredData::Page.new(
+  title: "Example",
+  description: "Useful software from Example",
+  image: image_url("social/home.png"),
+  canonical_url: root_url,
+  page_types: [organization, website],
+  render_breadcrumb_json_ld: false
+)
+```
+
+### Forum Or Community Post
+
+Use `DiscussionForumPosting` for public, user-authored, timestamped posts:
+
+```ruby
+post_author = PageStructuredData::PageTypes::Person.new(
+  name: @post.user.name,
+  url: user_url(@post.user)
+)
+
+post_page_type = PageStructuredData::PageTypes::DiscussionForumPosting.new(
+  headline: @post.title,
+  text: @post.content_plaintext,
+  url: post_url(@post),
+  published_at: @post.created_at,
+  updated_at: @post.updated_at,
+  authors: [post_author],
+  comments_count: @post.comments_count
+)
+
+@page_meta = PageStructuredData::Page.new(
+  title: @post.title,
+  description: @post.excerpt,
+  canonical_url: post_url(@post),
+  page_type: post_page_type
+)
+```
+
+Only pass engagement counts that are public and visible on the rendered page.
+
+### Page-Local Site Name
+
+Override or suppress the global app name for one page:
+
+```ruby
+PageStructuredData.base_app_name = "Example"
+
+PageStructuredData::Page.new(
+  title: "Docs",
+  base_app_name: "Developer Docs"
+).page_title
+# => "Docs - Developer Docs"
+
+PageStructuredData::Page.new(
+  title: "Minimal",
+  base_app_name: ""
+).page_title
+# => "Minimal"
+```
+
+### Breadcrumb JSON-LD Control
+
+Control generated breadcrumb JSON-LD per page:
+
+```ruby
+PageStructuredData::Page.new(
+  title: "Landing Page",
+  render_breadcrumb_json_ld: false
+)
+```
+
+When the global default is disabled, a page can still opt in:
+
+```ruby
+PageStructuredData.render_default_breadcrumb_json_ld = false
+
+PageStructuredData::Page.new(
+  title: "Standalone Page",
+  render_breadcrumb_json_ld: true
+)
+```
+
 ## API Reference
 
 ### `PageStructuredData::Page`

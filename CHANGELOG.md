@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Add README common pattern examples.
 - Add focused rendered metadata output coverage.
 - Add soft validation helpers with `warnings` and `valid?`.
 - Improve README and gem metadata positioning.
