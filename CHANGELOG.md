@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+## 1.0.14 - 2026-07-05
+
 - Add page-level `robots` meta tag support.
 - Add richer optional schema fields for article-like page types.
 - Add README common pattern examples.
