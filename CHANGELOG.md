@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+## 1.0.15 - 2026-08-01
+
 - Add optional page-level `social_description` support for distinct Open Graph
   and X/Twitter descriptions with fallback to the standard SEO description.
 - Escape JSON-LD independently of host-app Active Support configuration before
