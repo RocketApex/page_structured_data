@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'active_support/core_ext/erb/util'
 require 'active_support/core_ext/string/output_safety'
 
 module PageStructuredData
