@@ -55,19 +55,14 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "noindex,follow", page.robots_content
   end
 
-  test "pages include default breadcrumb json ld" do
+  test "pages omit invalid current-page-only breadcrumb json ld" do
     page = PageStructuredData::Page.new(title: "Home")
 
-    json_ld = parse_json_ld(page.json_lds)
-
-    assert_equal "https://schema.org", json_ld["@context"]
-    assert_equal "BreadcrumbList", json_ld["@type"]
-    assert_equal [{ "@type" => "ListItem", "position" => 1, "name" => "Home" }], json_ld["itemListElement"]
+    assert_equal "", page.json_lds
   end
 
-  test "pages can opt out of default breadcrumb json ld" do
-    PageStructuredData.render_default_breadcrumb_json_ld = false
-    page = PageStructuredData::Page.new(title: "Home")
+  test "empty breadcrumb objects do not render one-item breadcrumb json ld" do
+    page = PageStructuredData::Page.new(title: "Home", breadcrumb: PageStructuredData::Breadcrumbs.new)
 
     assert_equal "", page.json_lds
   end
@@ -85,14 +80,11 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "", page.json_lds
   end
 
-  test "pages can opt in to default breadcrumb json ld when global default is disabled" do
+  test "page opt in does not render invalid current-page-only breadcrumb json ld" do
     PageStructuredData.render_default_breadcrumb_json_ld = false
     page = PageStructuredData::Page.new(title: "Home", render_breadcrumb_json_ld: true)
 
-    json_ld = parse_json_ld(page.json_lds)
-
-    assert_equal "BreadcrumbList", json_ld["@type"]
-    assert_equal "Home", json_ld["itemListElement"].first["name"]
+    assert_equal "", page.json_lds
   end
 
   test "explicit breadcrumbs render when default breadcrumb json ld is disabled" do
@@ -448,10 +440,22 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "DiscussionForumPosting", json_ld["@type"]
     assert_equal "Is schema.org useful?", json_ld["headline"]
     assert_equal "A public forum post about structured data.", json_ld["articleBody"]
+    assert_equal "A public forum post about structured data.", json_ld["text"]
     assert_equal ["https://example.com/post.png"], json_ld["image"]
     assert_equal "https://example.com/posts/1", json_ld["url"]
     assert_equal "CommentAction", json_ld["interactionStatistic"][0]["interactionType"]["@type"]
     assert_equal 25, json_ld["interactionStatistic"][0]["userInteractionCount"]
+  end
+
+  test "discussion forum posting warns when author and content are absent" do
+    page_type = PageStructuredData::PageTypes::DiscussionForumPosting.new(
+      headline: "Is schema.org useful?",
+      published_at: Time.zone.parse("2026-05-01 10:00:00 UTC"),
+      updated_at: Time.zone.parse("2026-05-02 10:00:00 UTC")
+    )
+
+    assert_equal ["author is required", "text or image is required"], page_type.warnings
+    refute page_type.valid?
   end
 
   test "organization renders required schema" do
@@ -690,14 +694,22 @@ class PageStructuredDataTest < ActiveSupport::TestCase
     assert_equal "Launch Notes", json_lds.second["headline"]
   end
 
-  test "json ld escapes script-breaking content" do
+  test "json ld escapes script-breaking content when active support html escaping is disabled" do
     dangerous_value = "</script><script>alert(1)</script>"
-    page = PageStructuredData::Page.new(title: dangerous_value)
+    breadcrumbs = PageStructuredData::Breadcrumbs.new(
+      hierarchy: [{ title: "Resources", href: "https://example.com/resources" }]
+    )
+    page = PageStructuredData::Page.new(title: dangerous_value, breadcrumb: breadcrumbs)
+
+    original_escape_html_entities = ActiveSupport.escape_html_entities_in_json
+    ActiveSupport.escape_html_entities_in_json = false
 
     html = page.json_lds
 
     assert_json_ld_escapes_script_breaking_content(html, dangerous_value)
-    assert_equal dangerous_value, parse_json_ld(html)["itemListElement"].first["name"]
+    assert_equal dangerous_value, parse_json_ld(html)["itemListElement"].last["name"]
+  ensure
+    ActiveSupport.escape_html_entities_in_json = original_escape_html_entities
   end
 
   test "breadcrumb json ld escapes hierarchy titles and urls" do

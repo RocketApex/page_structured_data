@@ -23,6 +23,105 @@ class MetaTagsPartialTest < ActionView::TestCase
     assert_select 'meta[name="twitter:image"][content="https://example.com/home.png"]'
   end
 
+  test "renders distinct seo and social descriptions" do
+    page = PageStructuredData::Page.new(
+      title: "Home",
+      description: "Search description",
+      social_description: "Social description"
+    )
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_select 'meta[name="description"][content="Search description"]'
+    assert_select 'meta[property="og:description"][content="Social description"]'
+    assert_select 'meta[name="twitter:description"][content="Social description"]'
+  end
+
+  test "nil social description falls back to seo description" do
+    page = PageStructuredData::Page.new(
+      title: "Home",
+      description: "Search description",
+      social_description: nil
+    )
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_select 'meta[name="description"][content="Search description"]'
+    assert_select 'meta[property="og:description"][content="Search description"]'
+    assert_select 'meta[name="twitter:description"][content="Search description"]'
+  end
+
+  test "blank social description falls back to seo description" do
+    page = PageStructuredData::Page.new(
+      title: "Home",
+      description: "Search description",
+      social_description: "  "
+    )
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_select 'meta[name="description"][content="Search description"]'
+    assert_select 'meta[property="og:description"][content="Search description"]'
+    assert_select 'meta[name="twitter:description"][content="Search description"]'
+  end
+
+  test "social description renders when seo description is blank" do
+    page = PageStructuredData::Page.new(
+      title: "Home",
+      description: "",
+      social_description: "Social description"
+    )
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_select 'meta[name="description"]', count: 0
+    assert_select 'meta[property="og:description"][content="Social description"]'
+    assert_select 'meta[name="twitter:description"][content="Social description"]'
+  end
+
+  test "escapes html-sensitive social description content" do
+    page = PageStructuredData::Page.new(
+      title: "Home",
+      social_description: 'Social "quoted" & <tag>'
+    )
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_includes rendered, '<meta property="og:description" content="Social &quot;quoted&quot; &amp; &lt;tag&gt;">'
+    assert_includes rendered, '<meta name="twitter:description" content="Social &quot;quoted&quot; &amp; &lt;tag&gt;">'
+  end
+
+  test "social description preserves canonical robots image title and json ld" do
+    breadcrumbs = PageStructuredData::Breadcrumbs.new(
+      hierarchy: [{ title: "Resources", href: "https://example.com/resources" }]
+    )
+    page_type = PageStructuredData::PageTypes::NewsArticle.new(
+      headline: "Launch Notes",
+      published_at: Time.zone.parse("2026-05-01 10:00:00 UTC"),
+      updated_at: Time.zone.parse("2026-05-02 10:00:00 UTC")
+    )
+    page = PageStructuredData::Page.new(
+      title: "Launch Notes",
+      social_description: "Social description",
+      image: "https://example.com/launch.png",
+      canonical_url: "https://example.com/launch",
+      robots: "index,follow",
+      breadcrumb: breadcrumbs,
+      page_type: page_type
+    )
+
+    render partial: "page_structured_data/meta_tags", locals: { page: page }
+
+    assert_select "title", text: "Launch Notes - Resources"
+    assert_select 'link[rel="canonical"][href="https://example.com/launch"]'
+    assert_select 'meta[name="robots"][content="index,follow"]'
+    assert_select 'meta[property="og:image"][content="https://example.com/launch.png"]'
+    json_ld_types = css_select('script[type="application/ld+json"]').map do |script|
+      JSON.parse(script.text)["@type"]
+    end
+    assert_equal ["BreadcrumbList", "NewsArticle"], json_ld_types
+  end
+
   test "renders full metadata tags in stable head order" do
     page = PageStructuredData::Page.new(
       title: "Home",
@@ -108,12 +207,15 @@ class MetaTagsPartialTest < ActionView::TestCase
   end
 
   test "renders json ld scripts" do
+    breadcrumbs = PageStructuredData::Breadcrumbs.new(
+      hierarchy: [{ title: "Insights", href: "https://example.com/insights" }]
+    )
     page_type = PageStructuredData::PageTypes::NewsArticle.new(
       headline: "Launch Notes",
       published_at: Time.zone.parse("2026-05-01 10:00:00 UTC"),
       updated_at: Time.zone.parse("2026-05-02 10:00:00 UTC")
     )
-    page = PageStructuredData::Page.new(title: "Launch Notes", page_type: page_type)
+    page = PageStructuredData::Page.new(title: "Launch Notes", breadcrumb: breadcrumbs, page_type: page_type)
 
     render partial: "page_structured_data/meta_tags", locals: { page: page }
 
@@ -124,6 +226,9 @@ class MetaTagsPartialTest < ActionView::TestCase
   end
 
   test "renders multiple json ld scripts after social metadata" do
+    breadcrumbs = PageStructuredData::Breadcrumbs.new(
+      hierarchy: [{ title: "About", href: "https://rocketapex.com/about" }]
+    )
     organization = PageStructuredData::PageTypes::Organization.new(
       name: "RocketApex",
       url: "https://rocketapex.com"
@@ -137,6 +242,7 @@ class MetaTagsPartialTest < ActionView::TestCase
       title: "Home",
       description: "Open source projects from RocketApex",
       image: "https://rocketapex.com/logo.png",
+      breadcrumb: breadcrumbs,
       page_types: [organization, website]
     )
 

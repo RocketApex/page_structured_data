@@ -173,6 +173,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  minitest (< 6)
   page_structured_data!
   puma
   sprockets-rails

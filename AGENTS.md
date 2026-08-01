@@ -8,7 +8,7 @@ Because this is a public gem and repository, changes should be polished before r
 
 - `PageStructuredData.config { |config| ... }`
 - `PageStructuredData.base_app_name`
-- `PageStructuredData::Page.new(title:, description:, image:, extra_title:, breadcrumb:, page_type:)`
+- `PageStructuredData::Page.new(title:, description:, social_description:, image:, extra_title:, breadcrumb:, page_type:)`
 - `PageStructuredData::Breadcrumbs.new(hierarchy:)`
 - `PageStructuredData::PageTypes::BlogPosting.new(...)`
 - `PageStructuredData::PageTypes::NewsArticle.new(...)`
@@ -20,9 +20,9 @@ Because this is a public gem and repository, changes should be polished before r
 - Test coverage was very thin. Baseline tests now document current title composition and JSON-LD behavior.
 - The dummy app previously used `config.autoload_lib`, which is Rails 7.1-only, while the lockfile resolves Rails 7.0.8. This has been changed to explicit `autoload_paths` and `eager_load_paths`.
 - `require "page_structured_data"` previously failed before Rails was loaded. The engine now requires the Rails pieces it depends on.
-- `Page` emits current-page-only breadcrumb JSON-LD when no breadcrumb is passed by default. This is preserved for compatibility and can be disabled with `PageStructuredData.render_default_breadcrumb_json_ld = false`.
+- Breadcrumb JSON-LD renders only when an explicit hierarchy and current page produce at least two list items. The legacy `render_default_breadcrumb_json_ld` configuration remains accepted, but one-item lists are suppressed.
 - `BlogPosting` and `NewsArticle` share article behavior through `PageStructuredData::PageTypes::Article`.
-- JSON-LD methods currently return full `<script>` HTML strings, and the ERB partial marks the combined output as `html_safe`. A future safer API could expose hashes while keeping `json_ld` backward compatible.
+- JSON-LD methods return full `<script>` HTML strings and explicitly escape encoded data before the ERB partial marks the combined output as `html_safe`.
 - The gemspec requires Ruby `>= 2.7.0`, matching the Rails 7 baseline.
 - The gemspec supports Rails 7.x and Rails 8.x. Keep CI coverage aligned before widening support further.
 
