@@ -22,11 +22,10 @@ module PageStructuredData
     end
 
     def json_ld(current_page_title:)
-      %(
-      <script type="application/ld+json">
-        #{to_h(current_page_title: current_page_title).to_json}
-        </script>
-      )
+      node = to_h(current_page_title: current_page_title)
+      return if node[:itemListElement].size < 2
+
+      JsonLd.script_tag(node)
     end
 
     private

@@ -2,6 +2,7 @@
 
 <% title = page&.page_title %>
 <% description = page&.description %>
+<% social_description = page&.resolved_social_description %>
 <% image = page&.resolved_image || default_image_url || nil %>
 <% canonical_url = page&.canonical_url %>
 <% robots_content = page&.robots_content %>
@@ -23,8 +24,8 @@
 <% end %>
 
 <meta property="og:title" content="<%= title %>">
-<% if description.present? %>
-<meta property="og:description" content="<%= description %>">
+<% if social_description.present? %>
+<meta property="og:description" content="<%= social_description %>">
 <% end %>
 <% if image.present? %>
 <meta property="og:image" content="<%= image %>">
@@ -32,8 +33,8 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<%= title %>">
-<% if description.present? %>
-<meta name="twitter:description" content="<%= description %>">
+<% if social_description.present? %>
+<meta name="twitter:description" content="<%= social_description %>">
 <% end %>
 <% if image.present? %>
 <meta name="twitter:image" content="<%= image %>">

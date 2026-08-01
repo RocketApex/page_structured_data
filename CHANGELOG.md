@@ -4,6 +4,19 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Add optional page-level `social_description` support for distinct Open Graph
+  and X/Twitter descriptions with fallback to the standard SEO description.
+- Escape JSON-LD independently of host-app Active Support configuration before
+  rendering script tags as HTML-safe.
+- Stop rendering invalid current-page-only breadcrumb JSON-LD while preserving
+  explicit breadcrumb hierarchies.
+- Render Google-compatible `text` for discussion forum posts while retaining
+  `articleBody` for backward compatibility, and warn when author or post
+  content is missing.
+- Ensure the documented `rake test` command executes the complete Rails test
+  suite and constrain test dependencies to compatible Minitest and Rails 7.0
+  SQLite lines.
+
 ## 1.0.14 - 2026-07-05
 
 - Add page-level `robots` meta tag support.

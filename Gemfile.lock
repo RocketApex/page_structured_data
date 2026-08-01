@@ -173,10 +173,11 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  minitest (< 6)
   page_structured_data!
   puma
   sprockets-rails
-  sqlite3
+  sqlite3 (~> 1.4)
 
 BUNDLED WITH
    2.3.7

@@ -51,14 +51,11 @@ Configure application-wide defaults in an initializer:
 Rails.application.config.after_initialize do
   PageStructuredData.config do |config|
     config.base_app_name = "AwesomestApp"
-    config.render_default_breadcrumb_json_ld = true
   end
 end
 ```
 
 `base_app_name` is appended to generated page titles.
-
-`render_default_breadcrumb_json_ld` controls whether pages without an explicit breadcrumb render current-page-only breadcrumb JSON-LD. It defaults to `true` for backward compatibility. Set it to `false` if you only want breadcrumb JSON-LD when a `PageStructuredData::Breadcrumbs` object is passed to the page.
 
 For example:
 
@@ -98,12 +95,19 @@ Set `@page_meta` in the controller or view before the layout renders:
   title: "Home",
   extra_title: "Official Page",
   description: "Welcome to my page",
+  social_description: "See what is new on my page",
   image: image_url("social/home.png"),
   canonical_url: home_url,
   fallback_image: image_url("social/default.png"),
   robots: "index,follow"
 )
 ```
+
+`description` renders the standard SEO description. `social_description` is
+optional and renders the Open Graph and X/Twitter descriptions when it is
+nonblank. When `social_description` is nil or blank, those social tags fall
+back to `description`. This allows intentional social copy without changing the
+standard SEO description.
 
 The generated title is built from:
 
@@ -139,7 +143,11 @@ Pass the breadcrumbs into the page object:
 
 This renders `BreadcrumbList` JSON-LD similar to Google's breadcrumb structured data format.
 
-Current compatibility note: when no breadcrumb object is passed, `PageStructuredData::Page` renders current-page-only breadcrumb JSON-LD by default. To opt out, set `config.render_default_breadcrumb_json_ld = false`.
+Breadcrumb JSON-LD renders only when the resulting list contains at least two
+items. Pages without a breadcrumb hierarchy do not emit a current-page-only
+list because Google does not accept one-item breadcrumb data. The existing
+`render_default_breadcrumb_json_ld` configuration remains accepted for
+compatibility, but it cannot make an invalid one-item list render.
 
 ## Structured Page Types
 
@@ -378,6 +386,8 @@ post_page_type = PageStructuredData::PageTypes::DiscussionForumPosting.new(
 ```
 
 Only pass engagement counts that are public and visible on the rendered page.
+`DiscussionForumPosting` renders the supplied `text` as both `text` and the
+backward-compatible `articleBody` property.
 
 ### Page-Local Site Name
 
@@ -401,7 +411,7 @@ PageStructuredData::Page.new(
 
 ### Breadcrumb JSON-LD Control
 
-Control generated breadcrumb JSON-LD per page:
+Suppress an explicit breadcrumb hierarchy for one page:
 
 ```ruby
 PageStructuredData::Page.new(
@@ -410,16 +420,9 @@ PageStructuredData::Page.new(
 )
 ```
 
-When the global default is disabled, a page can still opt in:
-
-```ruby
-PageStructuredData.render_default_breadcrumb_json_ld = false
-
-PageStructuredData::Page.new(
-  title: "Standalone Page",
-  render_breadcrumb_json_ld: true
-)
-```
+Pages need at least one hierarchy item plus the current page before breadcrumb
+JSON-LD renders. Setting `render_breadcrumb_json_ld: true` does not synthesize
+missing hierarchy data.
 
 ### Paginated Archive
 
@@ -452,6 +455,7 @@ PageStructuredData::Page.new(
 PageStructuredData::Page.new(
   title:,
   description: nil,
+  social_description: nil,
   image: nil,
   extra_title: "",
   breadcrumb: nil,
@@ -465,8 +469,11 @@ PageStructuredData::Page.new(
 )
 ```
 
+`social_description` overrides `description` for Open Graph and X/Twitter
+description tags when nonblank. It does not change the standard SEO description
+tag.
 `base_app_name` overrides `PageStructuredData.base_app_name` for one page. Pass an empty string to suppress the global app name for a specific page.
-`render_breadcrumb_json_ld` can be set to `true` or `false` for one page. Leave it as `nil` to use the global `PageStructuredData.render_default_breadcrumb_json_ld` behavior for generated default breadcrumbs. Explicit breadcrumb objects still render when the global default is disabled unless the page sets `render_breadcrumb_json_ld: false`.
+`render_breadcrumb_json_ld` can be set to `false` to suppress an explicit breadcrumb object. A true value never renders a breadcrumb list with fewer than two items.
 `robots` can be a string or array and renders a `<meta name="robots">` tag when present.
 
 Important methods:
@@ -474,6 +481,7 @@ Important methods:
 - `page_title`: returns the composed page title.
 - `json_lds`: returns the JSON-LD script tags for breadcrumbs and page type data.
 - `resolved_image`: returns `image` or `fallback_image`.
+- `resolved_social_description`: returns a nonblank `social_description` or falls back to `description`.
 - `robots_content`: returns the rendered robots directives.
 - `warnings`: returns soft validation warnings for the page and page types.
 - `valid?`: returns `true` when `warnings` is empty.

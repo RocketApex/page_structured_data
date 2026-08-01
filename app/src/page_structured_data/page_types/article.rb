@@ -60,11 +60,7 @@ module PageStructuredData
       end
 
       def json_ld
-        %(
-        <script type="application/ld+json">
-          #{to_h.to_json}
-          </script>
-        )
+        JsonLd.script_tag(to_h)
       end
 
       def warnings

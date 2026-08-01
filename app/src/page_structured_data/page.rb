@@ -3,14 +3,15 @@
 module PageStructuredData
   # Basic page metadata for any page
   class Page
-    attr_reader :title, :description, :image, :extra_title, :breadcrumb, :page_type, :page_types, :canonical_url,
-                :fallback_image, :base_app_name, :render_breadcrumb_json_ld, :robots
+    attr_reader :title, :description, :social_description, :image, :extra_title, :breadcrumb, :page_type, :page_types,
+                :canonical_url, :fallback_image, :base_app_name, :render_breadcrumb_json_ld, :robots
 
-    def initialize(title:, description: nil, image: nil, # rubocop:disable Metrics/ParameterLists
+    def initialize(title:, description: nil, social_description: nil, image: nil, # rubocop:disable Metrics/ParameterLists
                    extra_title: '', breadcrumb: nil, page_type: nil, page_types: nil, canonical_url: nil,
                    fallback_image: nil, base_app_name: nil, render_breadcrumb_json_ld: nil, robots: nil)
       @title = title
       @description = description
+      @social_description = social_description
       @image = image
       @extra_title = extra_title
       @breadcrumb = breadcrumb
@@ -46,6 +47,10 @@ module PageStructuredData
 
     def resolved_image
       image || fallback_image
+    end
+
+    def resolved_social_description
+      social_description.presence || description
     end
 
     def robots_content

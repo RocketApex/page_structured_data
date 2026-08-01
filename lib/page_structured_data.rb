@@ -1,6 +1,7 @@
 require "page_structured_data/version"
 require "page_structured_data/engine"
 require_relative "../app/src/page_structured_data/anchors"
+require_relative "../app/src/page_structured_data/json_ld"
 require_relative "../app/src/page_structured_data/breadcrumbs"
 require_relative "../app/src/page_structured_data/page_types/schema_node"
 require_relative "../app/src/page_structured_data/page_types/person"
