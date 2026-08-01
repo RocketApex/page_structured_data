@@ -14,7 +14,8 @@ All notable changes to this project are documented here.
   `articleBody` for backward compatibility, and warn when author or post
   content is missing.
 - Ensure the documented `rake test` command executes the complete Rails test
-  suite and constrain test dependencies to the compatible Minitest 5.x line.
+  suite and constrain test dependencies to compatible Minitest and Rails 7.0
+  SQLite lines.
 
 ## 1.0.14 - 2026-07-05
 
