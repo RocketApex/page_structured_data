@@ -4,9 +4,11 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 # Specify your gem's dependencies in page_structured_data.gemspec.
 gemspec
 
+gem "rails", "~> 8.1.0"
+
 gem "puma"
 
-gem "sqlite3", "~> 1.4"
+gem "sqlite3"
 
 gem "sprockets-rails"
 
