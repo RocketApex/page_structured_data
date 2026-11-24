@@ -25,6 +25,8 @@ jobs:
           ruby-version: "3.4.13"
       - run: gem install bundler-audit --version 0.9.3 --no-document
       - run: bundle-audit check --update --gemfile-lock gemfiles/Gemfile.lock
+        env:
+          BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/Gemfile
 
   codeql:
     name: CodeQL
