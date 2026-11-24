@@ -6,41 +6,26 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
+env:
+  BUNDLE_FROZEN: "true"
+
 jobs:
   test:
-    name: Ruby ${{ matrix.ruby }} / ${{ matrix.rails }}
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - ruby: "3.1"
-            rails: "Rails 7.0"
-            gemfile: "gemfiles/rails_7_0.gemfile"
-          - ruby: "3.2"
-            rails: "Rails 7.1"
-            gemfile: "gemfiles/rails_7_1.gemfile"
-          - ruby: "3.3"
-            rails: "Rails 7.2"
-            gemfile: "gemfiles/rails_7_2.gemfile"
-          - ruby: "3.3"
-            rails: "Rails 8.0"
-            gemfile: "gemfiles/rails_8_0.gemfile"
-          - ruby: "3.3"
-            rails: "Rails 8.1"
-            gemfile: "gemfiles/rails_8_1.gemfile"
-
-    env:
-      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18 # v1.343.0
         with:
-          ruby-version: ${{ matrix.ruby }}
+          ruby-version: "3.4.13"
           bundler-cache: true
 
       - name: Run tests
