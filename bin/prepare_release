@@ -5,6 +5,7 @@ require "date"
 require "open3"
 
 ROOT = File.expand_path("..", __dir__)
+ENV["BUNDLE_GEMFILE"] ||= File.join(ROOT, "gemfiles/Gemfile")
 VERSION_FILE = File.join(ROOT, "lib/page_structured_data/version.rb")
 CHANGELOG_FILE = File.join(ROOT, "CHANGELOG.md")
 
@@ -61,7 +62,7 @@ puts "Prepared page_structured_data #{version}."
 puts
 puts "Next manual steps:"
 puts "  gem push page_structured_data-#{version}.gem --otp YOUR_OTP"
-puts "  git add CHANGELOG.md Gemfile.lock lib/page_structured_data/version.rb"
+puts "  git add CHANGELOG.md gemfiles/Gemfile.lock lib/page_structured_data/version.rb"
 puts "  git commit -m \"Release #{version}\""
 puts "  git tag v#{version}"
 puts "  git push origin main --tags"

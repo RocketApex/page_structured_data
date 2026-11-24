@@ -1,9 +1,15 @@
 version: 2
 updates:
   - package-ecosystem: bundler
-    directory: "/"
+    # Resolve the test bundle with its own Ruby version.
+    directory: "/gemfiles"
     schedule:
       interval: weekly
+    ignore:
+      # Keep routine Minitest updates on the 5.x series used by the tests.
+      - dependency-name: minitest
+        update-types:
+          - "version-update:semver-major"
     groups:
       ruby-patches:
         update-types:

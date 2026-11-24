@@ -17,3 +17,4 @@
 
 # Matrix Gemfiles should resolve per CI Ruby/Rails job
 /gemfiles/*.lock
+!/gemfiles/Gemfile.lock
