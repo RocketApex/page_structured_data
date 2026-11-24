@@ -705,7 +705,8 @@ Important methods:
 Run the test suite:
 
 ```bash
-bundle exec rake test
+BUNDLE_GEMFILE=gemfiles/Gemfile bundle install
+BUNDLE_GEMFILE=gemfiles/Gemfile bundle exec rake test
 ```
 
 Verify the gem can be required:

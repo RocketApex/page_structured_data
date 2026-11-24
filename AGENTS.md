@@ -33,5 +33,5 @@ Because this is a public gem and repository, changes should be polished before r
 
 ## Verification Commands
 
-- `bundle exec rake test`
+- `BUNDLE_GEMFILE=gemfiles/Gemfile bundle exec rake test`
 - `ruby -Ilib -e 'require "page_structured_data"; puts PageStructuredData::VERSION'`
